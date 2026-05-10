@@ -1,0 +1,18 @@
+{
+  "name": "Wordly 💜",
+  "short_name": "Wordly",
+  "description": "İngilizce kelime öğrenme uygulaması",
+  "start_url": "/wordly/",
+  "display": "standalone",
+  "background_color": "#0f0221",
+  "theme_color": "#1a0533",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://api.iconify.design/twemoji:purple-heart.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
