@@ -1,0 +1,2060 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1a0533">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="https://api.iconify.design/twemoji:purple-heart.svg">
+<title>Wordly 💜</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0221;
+    --surface: #1e0940;
+    --surface2: #2d1060;
+    --accent: #c084fc;
+    --accent2: #f0abfc;
+    --gold: #fbbf24;
+    --green: #34d399;
+    --red: #f87171;
+    --text: #f3e8ff;
+    --text-dim: #a78bca;
+    --border: rgba(192,132,252,0.2);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background stars */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 20% 30%, rgba(192,132,252,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 80% 10%, rgba(240,171,252,0.5) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 50% 80%, rgba(192,132,252,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 10% 70%, rgba(251,191,36,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 60%, rgba(240,171,252,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 35% 50%, rgba(192,132,252,0.3) 0%, transparent 100%),
+      radial-gradient(2px 2px at 65% 25%, rgba(251,191,36,0.2) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 0 16px 40px; }
+
+  /* Header */
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 0 16px;
+  }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .streak-badge {
+    display: flex; align-items: center; gap-5px;
+    background: rgba(251,191,36,0.15);
+    border: 1px solid rgba(251,191,36,0.3);
+    border-radius: 20px; padding: 6px 12px;
+    font-size: 0.85rem; font-weight: 600; color: var(--gold);
+    gap: 4px;
+  }
+  .settings-btn {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 50%; width: 38px; height: 38px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 1rem; transition: all 0.2s;
+  }
+  .settings-btn:hover { background: var(--surface2); }
+
+  /* Stats bar */
+  .stats-bar {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 24px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px; padding: 12px;
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem; font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .stat-label { font-size: 0.7rem; color: var(--text-dim); margin-top: 2px; }
+
+  /* Progress ring */
+  .progress-section { text-align: center; margin-bottom: 28px; }
+  .progress-ring-wrap { position: relative; display: inline-block; }
+  .progress-ring-wrap svg { transform: rotate(-90deg); }
+  .progress-ring-bg { fill: none; stroke: var(--surface2); stroke-width: 8; }
+  .progress-ring-fill {
+    fill: none; stroke: url(#ringGrad); stroke-width: 8;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.6s cubic-bezier(0.4,0,0.2,1);
+  }
+  .progress-center {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .progress-pct {
+    font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .progress-sub { font-size: 0.7rem; color: var(--text-dim); }
+
+  /* Question card */
+  .question-card {
+    background: linear-gradient(145deg, var(--surface), var(--surface2));
+    border: 1px solid var(--border);
+    border-radius: 24px; padding: 28px 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+    animation: slideUp 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .question-type {
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px;
+    color: var(--text-dim); margin-bottom: 16px;
+  }
+  .question-word {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem; font-weight: 700;
+    text-align: center; margin: 12px 0;
+    background: linear-gradient(135deg, var(--text), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    line-height: 1.1;
+  }
+  .question-hint {
+    text-align: center; font-size: 0.8rem; color: var(--text-dim);
+    margin-top: 8px;
+  }
+
+  /* Options */
+  .options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .option-btn {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 16px; padding: 16px 12px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 500;
+    color: var(--text); cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+    text-align: center; line-height: 1.3;
+    position: relative; overflow: hidden;
+  }
+  .option-btn::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    opacity: 0; transition: opacity 0.2s;
+  }
+  .option-btn:hover:not(:disabled) { border-color: var(--accent); transform: translateY(-2px); }
+  .option-btn:hover:not(:disabled)::before { opacity: 0.07; }
+  .option-btn.correct {
+    border-color: var(--green); background: rgba(52,211,153,0.15);
+    animation: correct-pulse 0.5s ease;
+  }
+  .option-btn.wrong {
+    border-color: var(--red); background: rgba(248,113,113,0.15);
+    animation: shake 0.4s ease;
+  }
+  .option-btn span { position: relative; z-index: 1; }
+  @keyframes correct-pulse {
+    0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); }
+  }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); } 75% { transform: translateX(6px); }
+  }
+
+  /* Feedback card */
+  .feedback-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px; padding: 20px;
+    margin-bottom: 20px;
+    animation: slideUp 0.35s cubic-bezier(0.4,0,0.2,1);
+  }
+  .feedback-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .feedback-icon { font-size: 1.4rem; }
+  .feedback-title { font-weight: 600; font-size: 1rem; }
+  .feedback-title.correct-text { color: var(--green); }
+  .feedback-title.wrong-text { color: var(--red); }
+  .feedback-sentence {
+    background: rgba(192,132,252,0.08);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    padding: 12px 14px; margin-bottom: 12px;
+    font-style: italic; font-size: 0.9rem; line-height: 1.6;
+    color: var(--accent2);
+  }
+  .feedback-explanation {
+    font-size: 0.85rem; color: var(--text-dim); line-height: 1.6;
+  }
+  .feedback-loading {
+    display: flex; align-items: center; gap: 10px;
+    color: var(--text-dim); font-size: 0.85rem;
+  }
+  .spinner {
+    width: 18px; height: 18px; border: 2px solid var(--border);
+    border-top-color: var(--accent); border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Next button */
+  .next-btn {
+    width: 100%; padding: 18px;
+    background: linear-gradient(135deg, #7c3aed, #a855f7, #c084fc);
+    border: none; border-radius: 18px;
+    font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 600;
+    color: white; cursor: pointer;
+    transition: all 0.2s; letter-spacing: 0.5px;
+    box-shadow: 0 8px 24px rgba(124,58,237,0.4);
+  }
+  .next-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(124,58,237,0.5); }
+  .next-btn:active { transform: translateY(0); }
+  .next-btn.hidden {
+    opacity: 0; pointer-events: none;
+    /* reserve space so layout doesn't shift */
+  }
+
+  /* Notification banner */
+  .notif-banner {
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(251,191,36,0.1);
+    border: 1px solid rgba(251,191,36,0.25);
+    border-radius: 16px; padding: 14px 16px;
+    margin-bottom: 16px; gap: 12px;
+    animation: slideUp 0.4s ease;
+  }
+  .notif-banner-text { font-size: 0.82rem; color: var(--gold); line-height: 1.5; flex: 1; }
+  .notif-allow-btn {
+    background: rgba(251,191,36,0.2); border: 1px solid rgba(251,191,36,0.4);
+    border-radius: 10px; padding: 8px 14px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 600;
+    color: var(--gold); cursor: pointer; white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .notif-allow-btn:hover { background: rgba(251,191,36,0.3); }
+
+  /* Level badge */
+  .level-tag {
+    display: inline-block; padding: 3px 10px;
+    border-radius: 20px; font-size: 0.7rem; font-weight: 600;
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .level-A1 { background: rgba(52,211,153,0.2); color: var(--green); border: 1px solid rgba(52,211,153,0.3); }
+  .level-A2 { background: rgba(251,191,36,0.2); color: var(--gold); border: 1px solid rgba(251,191,36,0.3); }
+  .level-B1 { background: rgba(192,132,252,0.2); color: var(--accent); border: 1px solid rgba(192,132,252,0.3); }
+  .level-B2 { background: rgba(248,113,113,0.2); color: var(--red); border: 1px solid rgba(248,113,113,0.3); }
+
+  /* Settings modal */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px); z-index: 100;
+    display: flex; align-items: flex-end; justify-content: center;
+    animation: fadeIn 0.2s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 28px 28px 0 0; padding: 28px 24px 40px;
+    width: 100%; max-width: 480px;
+    animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1);
+  }
+  .modal-title {
+    font-family: 'Playfair Display', serif; font-size: 1.4rem;
+    margin-bottom: 20px;
+  }
+  .modal label { display: block; font-size: 0.85rem; color: var(--text-dim); margin-bottom: 6px; }
+  .modal input {
+    width: 100%; background: var(--bg);
+    border: 1.5px solid var(--border); border-radius: 12px;
+    padding: 12px 14px; color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+    margin-bottom: 16px;
+  }
+  .modal input:focus { outline: none; border-color: var(--accent); }
+  .modal-hint { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 20px; }
+  .modal-hint a { color: var(--accent); text-decoration: none; }
+  .modal-actions { display: flex; gap: 10px; }
+  .btn-save {
+    flex: 1; padding: 14px;
+    background: linear-gradient(135deg, #7c3aed, #c084fc);
+    border: none; border-radius: 14px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 600;
+    color: white; cursor: pointer;
+  }
+  .btn-cancel {
+    padding: 14px 20px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 14px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+    color: var(--text); cursor: pointer;
+  }
+
+  /* Celebration */
+  .celebration {
+    text-align: center; padding: 40px 20px;
+    animation: slideUp 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+  .celebration-emoji { font-size: 4rem; margin-bottom: 16px; }
+  .celebration-title {
+    font-family: 'Playfair Display', serif; font-size: 2rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+  .celebration-msg { color: var(--text-dim); margin-bottom: 24px; line-height: 1.6; }
+
+  /* Weak words section */
+  .section-title {
+    font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px;
+    color: var(--text-dim); margin-bottom: 10px; margin-top: 4px;
+  }
+  .weak-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+  .weak-chip {
+    background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.25);
+    border-radius: 20px; padding: 4px 12px;
+    font-size: 0.8rem; color: var(--red);
+  }
+  .hidden { display: none !important; }
+  .invisible { opacity: 0; pointer-events: none; transform: translateY(4px); transition: opacity 0.3s ease, transform 0.3s ease; }
+  .next-btn:not(.invisible) { opacity: 1; pointer-events: auto; transform: translateY(0); transition: opacity 0.3s ease, transform 0.3s ease; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="logo">Wordly 💜</div>
+    <div class="header-right">
+      <div class="streak-badge">🔥 <span id="streakNum">0</span> gün</div>
+      <div class="settings-btn" onclick="openSettings()">⚙️</div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-bar">
+    <div class="stat-card">
+      <div class="stat-num" id="statCorrect">0</div>
+      <div class="stat-label">Doğru</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statSession">0</div>
+      <div class="stat-label">Bu Oturum</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statTotal">0</div>
+      <div class="stat-label">Toplam</div>
+    </div>
+  </div>
+
+  <!-- Notification prompt banner -->
+  <div class="notif-banner hidden" id="notifBanner">
+    <div class="notif-banner-text">🔔 Her gün saat 20:00'de hatırlatma almak ister misin?</div>
+    <button class="notif-allow-btn" onclick="requestNotifPermission()">İzin Ver</button>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-section">
+    <div class="progress-ring-wrap">
+      <svg width="120" height="120" viewBox="0 0 120 120">
+        <defs>
+          <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#c084fc"/>
+            <stop offset="100%" style="stop-color:#f0abfc"/>
+          </linearGradient>
+        </defs>
+        <circle class="progress-ring-bg" cx="60" cy="60" r="52"/>
+        <circle class="progress-ring-fill" id="ringFill" cx="60" cy="60" r="52"
+          stroke-dasharray="326.7" stroke-dashoffset="326.7"/>
+      </svg>
+      <div class="progress-center">
+        <div class="progress-pct" id="progressPct">0%</div>
+        <div class="progress-sub">başarı</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Weak words -->
+  <div id="weakSection" class="hidden">
+    <div class="section-title">⚠️ Tekrar edilmesi gerekenler</div>
+    <div class="weak-list" id="weakList"></div>
+  </div>
+
+  <!-- Quiz area -->
+  <div id="quizArea">
+    <div class="question-card" id="questionCard">
+      <div class="question-type" id="questionType"></div>
+      <div style="text-align:center"><span class="level-tag" id="levelTag"></span></div>
+      <div class="question-word" id="questionWord"></div>
+      <div class="question-hint" id="questionHint"></div>
+    </div>
+    <div class="options" id="optionsGrid"></div>
+    <div id="feedbackArea"></div>
+    <button class="next-btn invisible" id="nextBtn" onclick="nextQuestion()">Sonraki Kelime →</button>
+  </div>
+
+  <!-- Celebration -->
+  <div class="celebration hidden" id="celebrationArea">
+    <div class="celebration-emoji" id="celebEmoji">🎉</div>
+    <div class="celebration-title" id="celebTitle">Harika!</div>
+    <div class="celebration-msg" id="celebMsg"></div>
+    <button class="next-btn" onclick="restartQuiz()">Tekrar Oyna 🔄</button>
+  </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal-overlay hidden" id="settingsModal">
+  <div class="modal">
+    <div class="modal-title">⚙️ Ayarlar</div>
+    <label>Groq API Key</label>
+    <input type="password" id="apiKeyInput" placeholder="gsk_...">
+    <div class="modal-hint">
+      Ücretsiz API key için: <a href="https://console.groq.com" target="_blank">console.groq.com</a><br>
+      Key olmadan da çalışır, sadece açıklama göstermez.
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeSettings()">İptal</button>
+      <button class="btn-save" onclick="saveSettings()">Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ──────────────────────────────────────────────
+// WORD BANK (A1-B2, EN-TR pairs)
+// ──────────────────────────────────────────────
+const WORDS = [
+  {"en":"happy","tr":"mutlu","level":"A1","type":"adjective"},
+  {"en":"sad","tr":"üzgün","level":"A1","type":"adjective"},
+  {"en":"beautiful","tr":"güzel","level":"A1","type":"adjective"},
+  {"en":"ugly","tr":"çirkin","level":"A1","type":"adjective"},
+  {"en":"big","tr":"büyük","level":"A1","type":"adjective"},
+  {"en":"small","tr":"küçük","level":"A1","type":"adjective"},
+  {"en":"fast","tr":"hızlı","level":"A1","type":"adjective"},
+  {"en":"slow","tr":"yavaş","level":"A1","type":"adjective"},
+  {"en":"hot","tr":"sıcak","level":"A1","type":"adjective"},
+  {"en":"cold","tr":"soğuk","level":"A1","type":"adjective"},
+  {"en":"good","tr":"iyi","level":"A1","type":"adjective"},
+  {"en":"bad","tr":"kötü","level":"A1","type":"adjective"},
+  {"en":"new","tr":"yeni","level":"A1","type":"adjective"},
+  {"en":"old","tr":"eski","level":"A1","type":"adjective"},
+  {"en":"young","tr":"genç","level":"A1","type":"adjective"},
+  {"en":"tall","tr":"uzun boylu","level":"A1","type":"adjective"},
+  {"en":"short","tr":"kısa","level":"A1","type":"adjective"},
+  {"en":"strong","tr":"güçlü","level":"A1","type":"adjective"},
+  {"en":"weak","tr":"zayıf","level":"A1","type":"adjective"},
+  {"en":"clean","tr":"temiz","level":"A1","type":"adjective"},
+  {"en":"dirty","tr":"kirli","level":"A1","type":"adjective"},
+  {"en":"easy","tr":"kolay","level":"A1","type":"adjective"},
+  {"en":"hard","tr":"zor","level":"A1","type":"adjective"},
+  {"en":"heavy","tr":"ağır","level":"A1","type":"adjective"},
+  {"en":"light","tr":"hafif","level":"A1","type":"adjective"},
+  {"en":"long","tr":"uzun","level":"A1","type":"adjective"},
+  {"en":"wide","tr":"geniş","level":"A1","type":"adjective"},
+  {"en":"narrow","tr":"dar","level":"A1","type":"adjective"},
+  {"en":"open","tr":"açık","level":"A1","type":"adjective"},
+  {"en":"closed","tr":"kapalı","level":"A1","type":"adjective"},
+  {"en":"right","tr":"doğru","level":"A1","type":"adjective"},
+  {"en":"wrong","tr":"yanlış","level":"A1","type":"adjective"},
+  {"en":"same","tr":"aynı","level":"A1","type":"adjective"},
+  {"en":"different","tr":"farklı","level":"A1","type":"adjective"},
+  {"en":"full","tr":"dolu","level":"A1","type":"adjective"},
+  {"en":"empty","tr":"boş","level":"A1","type":"adjective"},
+  {"en":"free","tr":"özgür","level":"A1","type":"adjective"},
+  {"en":"busy","tr":"meşgul","level":"A1","type":"adjective"},
+  {"en":"ready","tr":"hazır","level":"A1","type":"adjective"},
+  {"en":"late","tr":"geç","level":"A1","type":"adjective"},
+  {"en":"early","tr":"erken","level":"A1","type":"adjective"},
+  {"en":"dark","tr":"karanlık","level":"A1","type":"adjective"},
+  {"en":"bright","tr":"parlak","level":"A1","type":"adjective"},
+  {"en":"loud","tr":"gürültülü","level":"A1","type":"adjective"},
+  {"en":"quiet","tr":"sessiz","level":"A1","type":"adjective"},
+  {"en":"rich","tr":"zengin","level":"A1","type":"adjective"},
+  {"en":"poor","tr":"fakir","level":"A1","type":"adjective"},
+  {"en":"sick","tr":"hasta","level":"A1","type":"adjective"},
+  {"en":"well","tr":"sağlıklı","level":"A1","type":"adjective"},
+  {"en":"tired","tr":"yorgun","level":"A1","type":"adjective"},
+  {"en":"run","tr":"koşmak","level":"A1","type":"verb"},
+  {"en":"walk","tr":"yürümek","level":"A1","type":"verb"},
+  {"en":"eat","tr":"yemek","level":"A1","type":"verb"},
+  {"en":"drink","tr":"içmek","level":"A1","type":"verb"},
+  {"en":"sleep","tr":"uyumak","level":"A1","type":"verb"},
+  {"en":"wake","tr":"uyanmak","level":"A1","type":"verb"},
+  {"en":"speak","tr":"konuşmak","level":"A1","type":"verb"},
+  {"en":"listen","tr":"dinlemek","level":"A1","type":"verb"},
+  {"en":"read","tr":"okumak","level":"A1","type":"verb"},
+  {"en":"write","tr":"yazmak","level":"A1","type":"verb"},
+  {"en":"see","tr":"görmek","level":"A1","type":"verb"},
+  {"en":"hear","tr":"duymak","level":"A1","type":"verb"},
+  {"en":"think","tr":"düşünmek","level":"A1","type":"verb"},
+  {"en":"know","tr":"bilmek","level":"A1","type":"verb"},
+  {"en":"want","tr":"istemek","level":"A1","type":"verb"},
+  {"en":"need","tr":"ihtiyaç duymak","level":"A1","type":"verb"},
+  {"en":"like","tr":"sevmek","level":"A1","type":"verb"},
+  {"en":"love","tr":"aşık olmak","level":"A1","type":"verb"},
+  {"en":"hate","tr":"nefret etmek","level":"A1","type":"verb"},
+  {"en":"help","tr":"yardım etmek","level":"A1","type":"verb"},
+  {"en":"work","tr":"çalışmak","level":"A1","type":"verb"},
+  {"en":"play","tr":"oynamak","level":"A1","type":"verb"},
+  {"en":"learn","tr":"öğrenmek","level":"A1","type":"verb"},
+  {"en":"teach","tr":"öğretmek","level":"A1","type":"verb"},
+  {"en":"buy","tr":"satın almak","level":"A1","type":"verb"},
+  {"en":"sell","tr":"satmak","level":"A1","type":"verb"},
+  {"en":"give","tr":"vermek","level":"A1","type":"verb"},
+  {"en":"take","tr":"almak","level":"A1","type":"verb"},
+  {"en":"come","tr":"gelmek","level":"A1","type":"verb"},
+  {"en":"go","tr":"gitmek","level":"A1","type":"verb"},
+  {"en":"close","tr":"kapatmak","level":"A1","type":"verb"},
+  {"en":"start","tr":"başlamak","level":"A1","type":"verb"},
+  {"en":"stop","tr":"durmak","level":"A1","type":"verb"},
+  {"en":"wait","tr":"beklemek","level":"A1","type":"verb"},
+  {"en":"ask","tr":"sormak","level":"A1","type":"verb"},
+  {"en":"answer","tr":"cevap vermek","level":"A1","type":"verb"},
+  {"en":"call","tr":"aramak","level":"A1","type":"verb"},
+  {"en":"watch","tr":"izlemek","level":"A1","type":"verb"},
+  {"en":"show","tr":"göstermek","level":"A1","type":"verb"},
+  {"en":"find","tr":"bulmak","level":"A1","type":"verb"},
+  {"en":"lose","tr":"kaybetmek","level":"A1","type":"verb"},
+  {"en":"make","tr":"yapmak","level":"A1","type":"verb"},
+  {"en":"use","tr":"kullanmak","level":"A1","type":"verb"},
+  {"en":"keep","tr":"tutmak","level":"A1","type":"verb"},
+  {"en":"leave","tr":"ayrılmak","level":"A1","type":"verb"},
+  {"en":"bring","tr":"getirmek","level":"A1","type":"verb"},
+  {"en":"try","tr":"denemek","level":"A1","type":"verb"},
+  {"en":"move","tr":"hareket etmek","level":"A1","type":"verb"},
+  {"en":"sit","tr":"oturmak","level":"A1","type":"verb"},
+  {"en":"house","tr":"ev","level":"A1","type":"noun"},
+  {"en":"car","tr":"araba","level":"A1","type":"noun"},
+  {"en":"book","tr":"kitap","level":"A1","type":"noun"},
+  {"en":"water","tr":"su","level":"A1","type":"noun"},
+  {"en":"food","tr":"yiyecek","level":"A1","type":"noun"},
+  {"en":"time","tr":"zaman","level":"A1","type":"noun"},
+  {"en":"day","tr":"gün","level":"A1","type":"noun"},
+  {"en":"night","tr":"gece","level":"A1","type":"noun"},
+  {"en":"morning","tr":"sabah","level":"A1","type":"noun"},
+  {"en":"evening","tr":"akşam","level":"A1","type":"noun"},
+  {"en":"week","tr":"hafta","level":"A1","type":"noun"},
+  {"en":"month","tr":"ay","level":"A1","type":"noun"},
+  {"en":"year","tr":"yıl","level":"A1","type":"noun"},
+  {"en":"city","tr":"şehir","level":"A1","type":"noun"},
+  {"en":"country","tr":"ülke","level":"A1","type":"noun"},
+  {"en":"school","tr":"okul","level":"A1","type":"noun"},
+  {"en":"teacher","tr":"öğretmen","level":"A1","type":"noun"},
+  {"en":"student","tr":"öğrenci","level":"A1","type":"noun"},
+  {"en":"family","tr":"aile","level":"A1","type":"noun"},
+  {"en":"friend","tr":"arkadaş","level":"A1","type":"noun"},
+  {"en":"mother","tr":"anne","level":"A1","type":"noun"},
+  {"en":"father","tr":"baba","level":"A1","type":"noun"},
+  {"en":"brother","tr":"erkek kardeş","level":"A1","type":"noun"},
+  {"en":"sister","tr":"kız kardeş","level":"A1","type":"noun"},
+  {"en":"child","tr":"çocuk","level":"A1","type":"noun"},
+  {"en":"baby","tr":"bebek","level":"A1","type":"noun"},
+  {"en":"man","tr":"adam","level":"A1","type":"noun"},
+  {"en":"woman","tr":"kadın","level":"A1","type":"noun"},
+  {"en":"money","tr":"para","level":"A1","type":"noun"},
+  {"en":"job","tr":"iş","level":"A1","type":"noun"},
+  {"en":"phone","tr":"telefon","level":"A1","type":"noun"},
+  {"en":"door","tr":"kapı","level":"A1","type":"noun"},
+  {"en":"window","tr":"pencere","level":"A1","type":"noun"},
+  {"en":"table","tr":"masa","level":"A1","type":"noun"},
+  {"en":"chair","tr":"sandalye","level":"A1","type":"noun"},
+  {"en":"bed","tr":"yatak","level":"A1","type":"noun"},
+  {"en":"room","tr":"oda","level":"A1","type":"noun"},
+  {"en":"street","tr":"sokak","level":"A1","type":"noun"},
+  {"en":"road","tr":"yol","level":"A1","type":"noun"},
+  {"en":"shop","tr":"dükkan","level":"A1","type":"noun"},
+  {"en":"doctor","tr":"doktor","level":"A1","type":"noun"},
+  {"en":"hospital","tr":"hastane","level":"A1","type":"noun"},
+  {"en":"park","tr":"park","level":"A1","type":"noun"},
+  {"en":"garden","tr":"bahçe","level":"A1","type":"noun"},
+  {"en":"dog","tr":"köpek","level":"A1","type":"noun"},
+  {"en":"cat","tr":"kedi","level":"A1","type":"noun"},
+  {"en":"bird","tr":"kuş","level":"A1","type":"noun"},
+  {"en":"tree","tr":"ağaç","level":"A1","type":"noun"},
+  {"en":"flower","tr":"çiçek","level":"A1","type":"noun"},
+  {"en":"sun","tr":"güneş","level":"A1","type":"noun"},
+  {"en":"brave","tr":"cesur","level":"A2","type":"adjective"},
+  {"en":"clever","tr":"zeki","level":"A2","type":"adjective"},
+  {"en":"funny","tr":"komik","level":"A2","type":"adjective"},
+  {"en":"kind","tr":"nazik","level":"A2","type":"adjective"},
+  {"en":"lazy","tr":"tembel","level":"A2","type":"adjective"},
+  {"en":"angry","tr":"kızgın","level":"A2","type":"adjective"},
+  {"en":"nervous","tr":"gergin","level":"A2","type":"adjective"},
+  {"en":"hungry","tr":"aç","level":"A2","type":"adjective"},
+  {"en":"thirsty","tr":"susuz","level":"A2","type":"adjective"},
+  {"en":"friendly","tr":"arkadaş canlısı","level":"A2","type":"adjective"},
+  {"en":"polite","tr":"kibar","level":"A2","type":"adjective"},
+  {"en":"rude","tr":"kaba","level":"A2","type":"adjective"},
+  {"en":"honest","tr":"dürüst","level":"A2","type":"adjective"},
+  {"en":"shy","tr":"utangaç","level":"A2","type":"adjective"},
+  {"en":"careful","tr":"dikkatli","level":"A2","type":"adjective"},
+  {"en":"careless","tr":"dikkatsiz","level":"A2","type":"adjective"},
+  {"en":"dangerous","tr":"tehlikeli","level":"A2","type":"adjective"},
+  {"en":"safe","tr":"güvenli","level":"A2","type":"adjective"},
+  {"en":"important","tr":"önemli","level":"A2","type":"adjective"},
+  {"en":"interesting","tr":"ilginç","level":"A2","type":"adjective"},
+  {"en":"boring","tr":"sıkıcı","level":"A2","type":"adjective"},
+  {"en":"exciting","tr":"heyecan verici","level":"A2","type":"adjective"},
+  {"en":"surprised","tr":"şaşırmış","level":"A2","type":"adjective"},
+  {"en":"worried","tr":"endişeli","level":"A2","type":"adjective"},
+  {"en":"afraid","tr":"korkan","level":"A2","type":"adjective"},
+  {"en":"proud","tr":"gururlu","level":"A2","type":"adjective"},
+  {"en":"embarrassed","tr":"utanmış","level":"A2","type":"adjective"},
+  {"en":"comfortable","tr":"rahat","level":"A2","type":"adjective"},
+  {"en":"uncomfortable","tr":"rahatsız","level":"A2","type":"adjective"},
+  {"en":"delicious","tr":"lezzetli","level":"A2","type":"adjective"},
+  {"en":"awful","tr":"berbat","level":"A2","type":"adjective"},
+  {"en":"popular","tr":"popüler","level":"A2","type":"adjective"},
+  {"en":"famous","tr":"ünlü","level":"A2","type":"adjective"},
+  {"en":"strange","tr":"garip","level":"A2","type":"adjective"},
+  {"en":"serious","tr":"ciddi","level":"A2","type":"adjective"},
+  {"en":"smart","tr":"akıllı","level":"A2","type":"adjective"},
+  {"en":"stupid","tr":"aptal","level":"A2","type":"adjective"},
+  {"en":"lucky","tr":"şanslı","level":"A2","type":"adjective"},
+  {"en":"unlucky","tr":"şansız","level":"A2","type":"adjective"},
+  {"en":"possible","tr":"mümkün","level":"A2","type":"adjective"},
+  {"en":"impossible","tr":"imkânsız","level":"A2","type":"adjective"},
+  {"en":"necessary","tr":"gerekli","level":"A2","type":"adjective"},
+  {"en":"special","tr":"özel","level":"A2","type":"adjective"},
+  {"en":"normal","tr":"normal","level":"A2","type":"adjective"},
+  {"en":"usual","tr":"olağan","level":"A2","type":"adjective"},
+  {"en":"unusual","tr":"olağandışı","level":"A2","type":"adjective"},
+  {"en":"foreign","tr":"yabancı","level":"A2","type":"adjective"},
+  {"en":"local","tr":"yerel","level":"A2","type":"adjective"},
+  {"en":"public","tr":"halka açık","level":"A2","type":"adjective"},
+  {"en":"agree","tr":"kabul etmek","level":"A2","type":"verb"},
+  {"en":"disagree","tr":"katılmamak","level":"A2","type":"verb"},
+  {"en":"decide","tr":"karar vermek","level":"A2","type":"verb"},
+  {"en":"choose","tr":"seçmek","level":"A2","type":"verb"},
+  {"en":"explain","tr":"açıklamak","level":"A2","type":"verb"},
+  {"en":"describe","tr":"tanımlamak","level":"A2","type":"verb"},
+  {"en":"remember","tr":"hatırlamak","level":"A2","type":"verb"},
+  {"en":"forget","tr":"unutmak","level":"A2","type":"verb"},
+  {"en":"understand","tr":"anlamak","level":"A2","type":"verb"},
+  {"en":"believe","tr":"inanmak","level":"A2","type":"verb"},
+  {"en":"hope","tr":"ummak","level":"A2","type":"verb"},
+  {"en":"wish","tr":"dilemek","level":"A2","type":"verb"},
+  {"en":"enjoy","tr":"zevk almak","level":"A2","type":"verb"},
+  {"en":"prefer","tr":"tercih etmek","level":"A2","type":"verb"},
+  {"en":"suggest","tr":"önermek","level":"A2","type":"verb"},
+  {"en":"invite","tr":"davet etmek","level":"A2","type":"verb"},
+  {"en":"accept","tr":"kabul etmek","level":"A2","type":"verb"},
+  {"en":"refuse","tr":"reddetmek","level":"A2","type":"verb"},
+  {"en":"promise","tr":"söz vermek","level":"A2","type":"verb"},
+  {"en":"plan","tr":"planlamak","level":"A2","type":"verb"},
+  {"en":"prepare","tr":"hazırlamak","level":"A2","type":"verb"},
+  {"en":"practise","tr":"pratik yapmak","level":"A2","type":"verb"},
+  {"en":"improve","tr":"geliştirmek","level":"A2","type":"verb"},
+  {"en":"change","tr":"değiştirmek","level":"A2","type":"verb"},
+  {"en":"continue","tr":"devam etmek","level":"A2","type":"verb"},
+  {"en":"finish","tr":"bitirmek","level":"A2","type":"verb"},
+  {"en":"become","tr":"olmak","level":"A2","type":"verb"},
+  {"en":"seem","tr":"görünmek","level":"A2","type":"verb"},
+  {"en":"feel","tr":"hissetmek","level":"A2","type":"verb"},
+  {"en":"smile","tr":"gülümsemek","level":"A2","type":"verb"},
+  {"en":"laugh","tr":"gülmek","level":"A2","type":"verb"},
+  {"en":"cry","tr":"ağlamak","level":"A2","type":"verb"},
+  {"en":"shout","tr":"bağırmak","level":"A2","type":"verb"},
+  {"en":"whisper","tr":"fısıldamak","level":"A2","type":"verb"},
+  {"en":"visit","tr":"ziyaret etmek","level":"A2","type":"verb"},
+  {"en":"travel","tr":"seyahat etmek","level":"A2","type":"verb"},
+  {"en":"arrive","tr":"varmak","level":"A2","type":"verb"},
+  {"en":"return","tr":"dönmek","level":"A2","type":"verb"},
+  {"en":"send","tr":"göndermek","level":"A2","type":"verb"},
+  {"en":"receive","tr":"almak","level":"A2","type":"verb"},
+  {"en":"borrow","tr":"ödünç almak","level":"A2","type":"verb"},
+  {"en":"lend","tr":"ödünç vermek","level":"A2","type":"verb"},
+  {"en":"spend","tr":"harcamak","level":"A2","type":"verb"},
+  {"en":"save","tr":"biriktirmek","level":"A2","type":"verb"},
+  {"en":"pay","tr":"ödemek","level":"A2","type":"verb"},
+  {"en":"earn","tr":"kazanmak","level":"A2","type":"verb"},
+  {"en":"win","tr":"kazanmak","level":"A2","type":"verb"},
+  {"en":"break","tr":"kırmak","level":"A2","type":"verb"},
+  {"en":"advice","tr":"tavsiye","level":"A2","type":"noun"},
+  {"en":"advantage","tr":"avantaj","level":"A2","type":"noun"},
+  {"en":"disadvantage","tr":"dezavantaj","level":"A2","type":"noun"},
+  {"en":"question","tr":"soru","level":"A2","type":"noun"},
+  {"en":"problem","tr":"sorun","level":"A2","type":"noun"},
+  {"en":"solution","tr":"çözüm","level":"A2","type":"noun"},
+  {"en":"reason","tr":"sebep","level":"A2","type":"noun"},
+  {"en":"result","tr":"sonuç","level":"A2","type":"noun"},
+  {"en":"example","tr":"örnek","level":"A2","type":"noun"},
+  {"en":"idea","tr":"fikir","level":"A2","type":"noun"},
+  {"en":"opinion","tr":"görüş","level":"A2","type":"noun"},
+  {"en":"experience","tr":"deneyim","level":"A2","type":"noun"},
+  {"en":"skill","tr":"beceri","level":"A2","type":"noun"},
+  {"en":"knowledge","tr":"bilgi","level":"A2","type":"noun"},
+  {"en":"education","tr":"eğitim","level":"A2","type":"noun"},
+  {"en":"information","tr":"bilgi","level":"A2","type":"noun"},
+  {"en":"news","tr":"haber","level":"A2","type":"noun"},
+  {"en":"story","tr":"hikâye","level":"A2","type":"noun"},
+  {"en":"message","tr":"mesaj","level":"A2","type":"noun"},
+  {"en":"letter","tr":"mektup","level":"A2","type":"noun"},
+  {"en":"email","tr":"e-posta","level":"A2","type":"noun"},
+  {"en":"meeting","tr":"toplantı","level":"A2","type":"noun"},
+  {"en":"event","tr":"etkinlik","level":"A2","type":"noun"},
+  {"en":"party","tr":"parti","level":"A2","type":"noun"},
+  {"en":"holiday","tr":"tatil","level":"A2","type":"noun"},
+  {"en":"journey","tr":"yolculuk","level":"A2","type":"noun"},
+  {"en":"trip","tr":"gezi","level":"A2","type":"noun"},
+  {"en":"weather","tr":"hava durumu","level":"A2","type":"noun"},
+  {"en":"temperature","tr":"sıcaklık","level":"A2","type":"noun"},
+  {"en":"environment","tr":"çevre","level":"A2","type":"noun"},
+  {"en":"nature","tr":"doğa","level":"A2","type":"noun"},
+  {"en":"forest","tr":"orman","level":"A2","type":"noun"},
+  {"en":"mountain","tr":"dağ","level":"A2","type":"noun"},
+  {"en":"river","tr":"nehir","level":"A2","type":"noun"},
+  {"en":"sea","tr":"deniz","level":"A2","type":"noun"},
+  {"en":"beach","tr":"plaj","level":"A2","type":"noun"},
+  {"en":"island","tr":"ada","level":"A2","type":"noun"},
+  {"en":"village","tr":"köy","level":"A2","type":"noun"},
+  {"en":"town","tr":"kasaba","level":"A2","type":"noun"},
+  {"en":"airport","tr":"havalimanı","level":"A2","type":"noun"},
+  {"en":"station","tr":"istasyon","level":"A2","type":"noun"},
+  {"en":"hotel","tr":"otel","level":"A2","type":"noun"},
+  {"en":"restaurant","tr":"restoran","level":"A2","type":"noun"},
+  {"en":"market","tr":"pazar","level":"A2","type":"noun"},
+  {"en":"price","tr":"fiyat","level":"A2","type":"noun"},
+  {"en":"ticket","tr":"bilet","level":"A2","type":"noun"},
+  {"en":"passport","tr":"pasaport","level":"A2","type":"noun"},
+  {"en":"language","tr":"dil","level":"A2","type":"noun"},
+  {"en":"culture","tr":"kültür","level":"A2","type":"noun"},
+  {"en":"ambitious","tr":"hırslı","level":"B1","type":"adjective"},
+  {"en":"patient","tr":"sabırlı","level":"B1","type":"adjective"},
+  {"en":"creative","tr":"yaratıcı","level":"B1","type":"adjective"},
+  {"en":"confident","tr":"kendinden emin","level":"B1","type":"adjective"},
+  {"en":"generous","tr":"cömert","level":"B1","type":"adjective"},
+  {"en":"jealous","tr":"kıskanç","level":"B1","type":"adjective"},
+  {"en":"stubborn","tr":"inatçı","level":"B1","type":"adjective"},
+  {"en":"sensitive","tr":"hassas","level":"B1","type":"adjective"},
+  {"en":"curious","tr":"meraklı","level":"B1","type":"adjective"},
+  {"en":"determined","tr":"kararlı","level":"B1","type":"adjective"},
+  {"en":"elegant","tr":"zarif","level":"B1","type":"adjective"},
+  {"en":"innocent","tr":"masum","level":"B1","type":"adjective"},
+  {"en":"loyal","tr":"sadık","level":"B1","type":"adjective"},
+  {"en":"mature","tr":"olgun","level":"B1","type":"adjective"},
+  {"en":"modest","tr":"mütevazı","level":"B1","type":"adjective"},
+  {"en":"optimistic","tr":"iyimser","level":"B1","type":"adjective"},
+  {"en":"pessimistic","tr":"kötümser","level":"B1","type":"adjective"},
+  {"en":"reliable","tr":"güvenilir","level":"B1","type":"adjective"},
+  {"en":"selfish","tr":"bencil","level":"B1","type":"adjective"},
+  {"en":"sociable","tr":"sosyal","level":"B1","type":"adjective"},
+  {"en":"tolerant","tr":"hoşgörülü","level":"B1","type":"adjective"},
+  {"en":"independent","tr":"bağımsız","level":"B1","type":"adjective"},
+  {"en":"flexible","tr":"esnek","level":"B1","type":"adjective"},
+  {"en":"aggressive","tr":"saldırgan","level":"B1","type":"adjective"},
+  {"en":"anxious","tr":"kaygılı","level":"B1","type":"adjective"},
+  {"en":"cheerful","tr":"neşeli","level":"B1","type":"adjective"},
+  {"en":"confused","tr":"kafası karışık","level":"B1","type":"adjective"},
+  {"en":"disappointed","tr":"hayal kırıklığına uğramış","level":"B1","type":"adjective"},
+  {"en":"enthusiastic","tr":"hevesli","level":"B1","type":"adjective"},
+  {"en":"exhausted","tr":"bitkin","level":"B1","type":"adjective"},
+  {"en":"fascinated","tr":"büyülenmiş","level":"B1","type":"adjective"},
+  {"en":"frightened","tr":"korkmuş","level":"B1","type":"adjective"},
+  {"en":"frustrated","tr":"sinirlenmiş","level":"B1","type":"adjective"},
+  {"en":"grateful","tr":"minnettar","level":"B1","type":"adjective"},
+  {"en":"guilty","tr":"suçlu","level":"B1","type":"adjective"},
+  {"en":"impressed","tr":"etkilenmiş","level":"B1","type":"adjective"},
+  {"en":"lonely","tr":"yalnız","level":"B1","type":"adjective"},
+  {"en":"miserable","tr":"perişan","level":"B1","type":"adjective"},
+  {"en":"motivated","tr":"motive olmuş","level":"B1","type":"adjective"},
+  {"en":"offended","tr":"gücenmiş","level":"B1","type":"adjective"},
+  {"en":"overwhelmed","tr":"bunalmış","level":"B1","type":"adjective"},
+  {"en":"relaxed","tr":"rahatlamış","level":"B1","type":"adjective"},
+  {"en":"relieved","tr":"rahatlamış","level":"B1","type":"adjective"},
+  {"en":"shocked","tr":"şoke olmuş","level":"B1","type":"adjective"},
+  {"en":"suspicious","tr":"şüpheli","level":"B1","type":"adjective"},
+  {"en":"sympathetic","tr":"anlayışlı","level":"B1","type":"adjective"},
+  {"en":"thrilled","tr":"heyecanlı","level":"B1","type":"adjective"},
+  {"en":"upset","tr":"üzülmüş","level":"B1","type":"adjective"},
+  {"en":"achieve","tr":"başarmak","level":"B1","type":"verb"},
+  {"en":"admit","tr":"itiraf etmek","level":"B1","type":"verb"},
+  {"en":"allow","tr":"izin vermek","level":"B1","type":"verb"},
+  {"en":"apologise","tr":"özür dilemek","level":"B1","type":"verb"},
+  {"en":"appreciate","tr":"takdir etmek","level":"B1","type":"verb"},
+  {"en":"argue","tr":"tartışmak","level":"B1","type":"verb"},
+  {"en":"avoid","tr":"kaçınmak","level":"B1","type":"verb"},
+  {"en":"belong","tr":"ait olmak","level":"B1","type":"verb"},
+  {"en":"bother","tr":"rahatsız etmek","level":"B1","type":"verb"},
+  {"en":"challenge","tr":"meydan okumak","level":"B1","type":"verb"},
+  {"en":"communicate","tr":"iletişim kurmak","level":"B1","type":"verb"},
+  {"en":"compare","tr":"karşılaştırmak","level":"B1","type":"verb"},
+  {"en":"complain","tr":"şikâyet etmek","level":"B1","type":"verb"},
+  {"en":"consider","tr":"düşünmek","level":"B1","type":"verb"},
+  {"en":"convince","tr":"ikna etmek","level":"B1","type":"verb"},
+  {"en":"cope","tr":"başa çıkmak","level":"B1","type":"verb"},
+  {"en":"damage","tr":"zarar vermek","level":"B1","type":"verb"},
+  {"en":"develop","tr":"geliştirmek","level":"B1","type":"verb"},
+  {"en":"discover","tr":"keşfetmek","level":"B1","type":"verb"},
+  {"en":"discuss","tr":"tartışmak","level":"B1","type":"verb"},
+  {"en":"doubt","tr":"şüphe etmek","level":"B1","type":"verb"},
+  {"en":"encourage","tr":"cesaretlendirmek","level":"B1","type":"verb"},
+  {"en":"establish","tr":"kurmak","level":"B1","type":"verb"},
+  {"en":"examine","tr":"incelemek","level":"B1","type":"verb"},
+  {"en":"exist","tr":"var olmak","level":"B1","type":"verb"},
+  {"en":"expand","tr":"genişlemek","level":"B1","type":"verb"},
+  {"en":"explore","tr":"keşfetmek","level":"B1","type":"verb"},
+  {"en":"express","tr":"ifade etmek","level":"B1","type":"verb"},
+  {"en":"focus","tr":"odaklanmak","level":"B1","type":"verb"},
+  {"en":"follow","tr":"takip etmek","level":"B1","type":"verb"},
+  {"en":"force","tr":"zorlamak","level":"B1","type":"verb"},
+  {"en":"forgive","tr":"affetmek","level":"B1","type":"verb"},
+  {"en":"gain","tr":"kazanmak","level":"B1","type":"verb"},
+  {"en":"handle","tr":"üstesinden gelmek","level":"B1","type":"verb"},
+  {"en":"identify","tr":"tanımlamak","level":"B1","type":"verb"},
+  {"en":"imagine","tr":"hayal etmek","level":"B1","type":"verb"},
+  {"en":"include","tr":"dahil etmek","level":"B1","type":"verb"},
+  {"en":"increase","tr":"artırmak","level":"B1","type":"verb"},
+  {"en":"influence","tr":"etkilemek","level":"B1","type":"verb"},
+  {"en":"introduce","tr":"tanıtmak","level":"B1","type":"verb"},
+  {"en":"involve","tr":"içermek","level":"B1","type":"verb"},
+  {"en":"manage","tr":"yönetmek","level":"B1","type":"verb"},
+  {"en":"mention","tr":"bahsetmek","level":"B1","type":"verb"},
+  {"en":"notice","tr":"fark etmek","level":"B1","type":"verb"},
+  {"en":"obtain","tr":"elde etmek","level":"B1","type":"verb"},
+  {"en":"overcome","tr":"aşmak","level":"B1","type":"verb"},
+  {"en":"prevent","tr":"önlemek","level":"B1","type":"verb"},
+  {"en":"produce","tr":"üretmek","level":"B1","type":"verb"},
+  {"en":"realise","tr":"fark etmek","level":"B1","type":"verb"},
+  {"en":"recognise","tr":"tanımak","level":"B1","type":"verb"},
+  {"en":"ability","tr":"yetenek","level":"B1","type":"noun"},
+  {"en":"achievement","tr":"başarı","level":"B1","type":"noun"},
+  {"en":"attitude","tr":"tutum","level":"B1","type":"noun"},
+  {"en":"behaviour","tr":"davranış","level":"B1","type":"noun"},
+  {"en":"benefit","tr":"fayda","level":"B1","type":"noun"},
+  {"en":"career","tr":"kariyer","level":"B1","type":"noun"},
+  {"en":"character","tr":"karakter","level":"B1","type":"noun"},
+  {"en":"choice","tr":"seçim","level":"B1","type":"noun"},
+  {"en":"community","tr":"topluluk","level":"B1","type":"noun"},
+  {"en":"competition","tr":"rekabet","level":"B1","type":"noun"},
+  {"en":"confidence","tr":"güven","level":"B1","type":"noun"},
+  {"en":"conflict","tr":"çatışma","level":"B1","type":"noun"},
+  {"en":"consequence","tr":"sonuç","level":"B1","type":"noun"},
+  {"en":"contribution","tr":"katkı","level":"B1","type":"noun"},
+  {"en":"courage","tr":"cesaret","level":"B1","type":"noun"},
+  {"en":"criticism","tr":"eleştiri","level":"B1","type":"noun"},
+  {"en":"decision","tr":"karar","level":"B1","type":"noun"},
+  {"en":"demand","tr":"talep","level":"B1","type":"noun"},
+  {"en":"development","tr":"gelişme","level":"B1","type":"noun"},
+  {"en":"difference","tr":"fark","level":"B1","type":"noun"},
+  {"en":"difficulty","tr":"zorluk","level":"B1","type":"noun"},
+  {"en":"discovery","tr":"keşif","level":"B1","type":"noun"},
+  {"en":"discussion","tr":"tartışma","level":"B1","type":"noun"},
+  {"en":"effort","tr":"çaba","level":"B1","type":"noun"},
+  {"en":"emotion","tr":"duygu","level":"B1","type":"noun"},
+  {"en":"encouragement","tr":"teşvik","level":"B1","type":"noun"},
+  {"en":"evidence","tr":"kanıt","level":"B1","type":"noun"},
+  {"en":"expectation","tr":"beklenti","level":"B1","type":"noun"},
+  {"en":"failure","tr":"başarısızlık","level":"B1","type":"noun"},
+  {"en":"freedom","tr":"özgürlük","level":"B1","type":"noun"},
+  {"en":"government","tr":"hükümet","level":"B1","type":"noun"},
+  {"en":"growth","tr":"büyüme","level":"B1","type":"noun"},
+  {"en":"habit","tr":"alışkanlık","level":"B1","type":"noun"},
+  {"en":"imagination","tr":"hayal gücü","level":"B1","type":"noun"},
+  {"en":"improvement","tr":"gelişme","level":"B1","type":"noun"},
+  {"en":"independence","tr":"bağımsızlık","level":"B1","type":"noun"},
+  {"en":"intelligence","tr":"zekâ","level":"B1","type":"noun"},
+  {"en":"interest","tr":"ilgi","level":"B1","type":"noun"},
+  {"en":"issue","tr":"mesele","level":"B1","type":"noun"},
+  {"en":"justice","tr":"adalet","level":"B1","type":"noun"},
+  {"en":"leadership","tr":"liderlik","level":"B1","type":"noun"},
+  {"en":"lifestyle","tr":"yaşam tarzı","level":"B1","type":"noun"},
+  {"en":"memory","tr":"hafıza","level":"B1","type":"noun"},
+  {"en":"mood","tr":"ruh hali","level":"B1","type":"noun"},
+  {"en":"opportunity","tr":"fırsat","level":"B1","type":"noun"},
+  {"en":"organization","tr":"organizasyon","level":"B1","type":"noun"},
+  {"en":"patience","tr":"sabır","level":"B1","type":"noun"},
+  {"en":"personality","tr":"kişilik","level":"B1","type":"noun"},
+  {"en":"pleasure","tr":"zevk","level":"B1","type":"noun"},
+  {"en":"arrogant","tr":"kibirli","level":"B2","type":"adjective"},
+  {"en":"compassionate","tr":"şefkatli","level":"B2","type":"adjective"},
+  {"en":"courageous","tr":"yiğit","level":"B2","type":"adjective"},
+  {"en":"cunning","tr":"kurnaz","level":"B2","type":"adjective"},
+  {"en":"diligent","tr":"çalışkan","level":"B2","type":"adjective"},
+  {"en":"empathetic","tr":"empatik","level":"B2","type":"adjective"},
+  {"en":"flamboyant","tr":"gösterişli","level":"B2","type":"adjective"},
+  {"en":"humble","tr":"alçakgönüllü","level":"B2","type":"adjective"},
+  {"en":"impulsive","tr":"dürtüsel","level":"B2","type":"adjective"},
+  {"en":"intuitive","tr":"sezgisel","level":"B2","type":"adjective"},
+  {"en":"meticulous","tr":"titiz","level":"B2","type":"adjective"},
+  {"en":"naive","tr":"saf","level":"B2","type":"adjective"},
+  {"en":"peculiar","tr":"tuhaf","level":"B2","type":"adjective"},
+  {"en":"pragmatic","tr":"pragmatik","level":"B2","type":"adjective"},
+  {"en":"resilient","tr":"dayanıklı","level":"B2","type":"adjective"},
+  {"en":"sarcastic","tr":"alaycı","level":"B2","type":"adjective"},
+  {"en":"sophisticated","tr":"sofistike","level":"B2","type":"adjective"},
+  {"en":"spontaneous","tr":"kendiliğinden","level":"B2","type":"adjective"},
+  {"en":"tenacious","tr":"azimli","level":"B2","type":"adjective"},
+  {"en":"versatile","tr":"çok yönlü","level":"B2","type":"adjective"},
+  {"en":"absurd","tr":"saçma","level":"B2","type":"adjective"},
+  {"en":"acute","tr":"keskin","level":"B2","type":"adjective"},
+  {"en":"adamant","tr":"kararlı","level":"B2","type":"adjective"},
+  {"en":"adjacent","tr":"komşu","level":"B2","type":"adjective"},
+  {"en":"affectionate","tr":"sevecen","level":"B2","type":"adjective"},
+  {"en":"aloof","tr":"soğuk","level":"B2","type":"adjective"},
+  {"en":"ambiguous","tr":"belirsiz","level":"B2","type":"adjective"},
+  {"en":"apprehensive","tr":"endişeli","level":"B2","type":"adjective"},
+  {"en":"articulate","tr":"açık sözlü","level":"B2","type":"adjective"},
+  {"en":"astute","tr":"zeki","level":"B2","type":"adjective"},
+  {"en":"audacious","tr":"cesur","level":"B2","type":"adjective"},
+  {"en":"averse","tr":"karşı","level":"B2","type":"adjective"},
+  {"en":"bewildered","tr":"şaşkın","level":"B2","type":"adjective"},
+  {"en":"candid","tr":"açık sözlü","level":"B2","type":"adjective"},
+  {"en":"cautious","tr":"ihtiyatlı","level":"B2","type":"adjective"},
+  {"en":"coherent","tr":"tutarlı","level":"B2","type":"adjective"},
+  {"en":"complacent","tr":"memnun","level":"B2","type":"adjective"},
+  {"en":"conceited","tr":"kendini beğenmiş","level":"B2","type":"adjective"},
+  {"en":"contemptuous","tr":"küçümseyici","level":"B2","type":"adjective"},
+  {"en":"cynical","tr":"alaycı","level":"B2","type":"adjective"},
+  {"en":"debatable","tr":"tartışmalı","level":"B2","type":"adjective"},
+  {"en":"defiant","tr":"meydan okuyan","level":"B2","type":"adjective"},
+  {"en":"deliberate","tr":"kasıtlı","level":"B2","type":"adjective"},
+  {"en":"desolate","tr":"ıssız","level":"B2","type":"adjective"},
+  {"en":"detached","tr":"mesafeli","level":"B2","type":"adjective"},
+  {"en":"distraught","tr":"perişan","level":"B2","type":"adjective"},
+  {"en":"dubious","tr":"şüpheli","level":"B2","type":"adjective"},
+  {"en":"earnest","tr":"ciddi","level":"B2","type":"adjective"},
+  {"en":"eccentric","tr":"tuhaf","level":"B2","type":"adjective"},
+  {"en":"elusive","tr":"zor yakalanır","level":"B2","type":"adjective"},
+  {"en":"eminent","tr":"seçkin","level":"B2","type":"adjective"},
+  {"en":"abandon","tr":"terk etmek","level":"B2","type":"verb"},
+  {"en":"abolish","tr":"kaldırmak","level":"B2","type":"verb"},
+  {"en":"accumulate","tr":"biriktirmek","level":"B2","type":"verb"},
+  {"en":"acknowledge","tr":"kabul etmek","level":"B2","type":"verb"},
+  {"en":"acquire","tr":"edinmek","level":"B2","type":"verb"},
+  {"en":"adapt","tr":"uyum sağlamak","level":"B2","type":"verb"},
+  {"en":"advocate","tr":"savunmak","level":"B2","type":"verb"},
+  {"en":"allocate","tr":"tahsis etmek","level":"B2","type":"verb"},
+  {"en":"alter","tr":"değiştirmek","level":"B2","type":"verb"},
+  {"en":"analyse","tr":"analiz etmek","level":"B2","type":"verb"},
+  {"en":"anticipate","tr":"öngörmek","level":"B2","type":"verb"},
+  {"en":"assert","tr":"iddia etmek","level":"B2","type":"verb"},
+  {"en":"assess","tr":"değerlendirmek","level":"B2","type":"verb"},
+  {"en":"assume","tr":"varsaymak","level":"B2","type":"verb"},
+  {"en":"attribute","tr":"atfetmek","level":"B2","type":"verb"},
+  {"en":"collaborate","tr":"iş birliği yapmak","level":"B2","type":"verb"},
+  {"en":"compensate","tr":"tazmin etmek","level":"B2","type":"verb"},
+  {"en":"compromise","tr":"uzlaşmak","level":"B2","type":"verb"},
+  {"en":"contemplate","tr":"düşünmek","level":"B2","type":"verb"},
+  {"en":"contradict","tr":"çelişmek","level":"B2","type":"verb"},
+  {"en":"contribute","tr":"katkıda bulunmak","level":"B2","type":"verb"},
+  {"en":"convey","tr":"iletmek","level":"B2","type":"verb"},
+  {"en":"deduce","tr":"sonuç çıkarmak","level":"B2","type":"verb"},
+  {"en":"demonstrate","tr":"göstermek","level":"B2","type":"verb"},
+  {"en":"derive","tr":"türetmek","level":"B2","type":"verb"},
+  {"en":"designate","tr":"atamak","level":"B2","type":"verb"},
+  {"en":"deteriorate","tr":"kötüleşmek","level":"B2","type":"verb"},
+  {"en":"differentiate","tr":"ayırt etmek","level":"B2","type":"verb"},
+  {"en":"diminish","tr":"azalmak","level":"B2","type":"verb"},
+  {"en":"distinguish","tr":"ayırt etmek","level":"B2","type":"verb"},
+  {"en":"dominate","tr":"hâkim olmak","level":"B2","type":"verb"},
+  {"en":"eliminate","tr":"ortadan kaldırmak","level":"B2","type":"verb"},
+  {"en":"emphasise","tr":"vurgulamak","level":"B2","type":"verb"},
+  {"en":"encounter","tr":"karşılaşmak","level":"B2","type":"verb"},
+  {"en":"enforce","tr":"uygulamak","level":"B2","type":"verb"},
+  {"en":"enhance","tr":"geliştirmek","level":"B2","type":"verb"},
+  {"en":"ensure","tr":"sağlamak","level":"B2","type":"verb"},
+  {"en":"evaluate","tr":"değerlendirmek","level":"B2","type":"verb"},
+  {"en":"evolve","tr":"evrimleşmek","level":"B2","type":"verb"},
+  {"en":"exaggerate","tr":"abartmak","level":"B2","type":"verb"},
+  {"en":"facilitate","tr":"kolaylaştırmak","level":"B2","type":"verb"},
+  {"en":"generate","tr":"üretmek","level":"B2","type":"verb"},
+  {"en":"implement","tr":"uygulamak","level":"B2","type":"verb"},
+  {"en":"imply","tr":"ima etmek","level":"B2","type":"verb"},
+  {"en":"indicate","tr":"belirtmek","level":"B2","type":"verb"},
+  {"en":"interpret","tr":"yorumlamak","level":"B2","type":"verb"},
+  {"en":"justify","tr":"haklı çıkarmak","level":"B2","type":"verb"},
+  {"en":"maintain","tr":"sürdürmek","level":"B2","type":"verb"},
+  {"en":"negotiate","tr":"müzakere etmek","level":"B2","type":"verb"},
+  {"en":"perceive","tr":"algılamak","level":"B2","type":"verb"},
+  {"en":"persist","tr":"ısrar etmek","level":"B2","type":"verb"},
+  {"en":"ambiguity","tr":"belirsizlik","level":"B2","type":"noun"},
+  {"en":"amendment","tr":"değişiklik","level":"B2","type":"noun"},
+  {"en":"analogy","tr":"benzetme","level":"B2","type":"noun"},
+  {"en":"anxiety","tr":"kaygı","level":"B2","type":"noun"},
+  {"en":"assumption","tr":"varsayım","level":"B2","type":"noun"},
+  {"en":"authority","tr":"otorite","level":"B2","type":"noun"},
+  {"en":"bias","tr":"önyargı","level":"B2","type":"noun"},
+  {"en":"capacity","tr":"kapasite","level":"B2","type":"noun"},
+  {"en":"circumstance","tr":"koşul","level":"B2","type":"noun"},
+  {"en":"coherence","tr":"tutarlılık","level":"B2","type":"noun"},
+  {"en":"complexity","tr":"karmaşıklık","level":"B2","type":"noun"},
+  {"en":"constraint","tr":"kısıtlama","level":"B2","type":"noun"},
+  {"en":"controversy","tr":"tartışma","level":"B2","type":"noun"},
+  {"en":"conviction","tr":"inanç","level":"B2","type":"noun"},
+  {"en":"criterion","tr":"kriter","level":"B2","type":"noun"},
+  {"en":"debate","tr":"tartışma","level":"B2","type":"noun"},
+  {"en":"decline","tr":"düşüş","level":"B2","type":"noun"},
+  {"en":"democracy","tr":"demokrasi","level":"B2","type":"noun"},
+  {"en":"dilemma","tr":"ikilem","level":"B2","type":"noun"},
+  {"en":"dimension","tr":"boyut","level":"B2","type":"noun"},
+  {"en":"discrimination","tr":"ayrımcılık","level":"B2","type":"noun"},
+  {"en":"diversity","tr":"çeşitlilik","level":"B2","type":"noun"},
+  {"en":"emphasis","tr":"vurgu","level":"B2","type":"noun"},
+  {"en":"entrepreneur","tr":"girişimci","level":"B2","type":"noun"},
+  {"en":"equality","tr":"eşitlik","level":"B2","type":"noun"},
+  {"en":"ethics","tr":"etik","level":"B2","type":"noun"},
+  {"en":"evolution","tr":"evrim","level":"B2","type":"noun"},
+  {"en":"expertise","tr":"uzmanlık","level":"B2","type":"noun"},
+  {"en":"extent","tr":"kapsam","level":"B2","type":"noun"},
+  {"en":"framework","tr":"çerçeve","level":"B2","type":"noun"},
+  {"en":"function","tr":"işlev","level":"B2","type":"noun"},
+  {"en":"globalization","tr":"küreselleşme","level":"B2","type":"noun"},
+  {"en":"hierarchy","tr":"hiyerarşi","level":"B2","type":"noun"},
+  {"en":"hypothesis","tr":"hipotez","level":"B2","type":"noun"},
+  {"en":"ideology","tr":"ideoloji","level":"B2","type":"noun"},
+  {"en":"implication","tr":"çıkarım","level":"B2","type":"noun"},
+  {"en":"incentive","tr":"teşvik","level":"B2","type":"noun"},
+  {"en":"inequality","tr":"eşitsizlik","level":"B2","type":"noun"},
+  {"en":"integrity","tr":"dürüstlük","level":"B2","type":"noun"},
+  {"en":"interpretation","tr":"yorum","level":"B2","type":"noun"},
+  {"en":"limitation","tr":"sınırlılık","level":"B2","type":"noun"},
+  {"en":"mechanism","tr":"mekanizma","level":"B2","type":"noun"},
+  {"en":"methodology","tr":"metodoloji","level":"B2","type":"noun"},
+  {"en":"motivation","tr":"motivasyon","level":"B2","type":"noun"},
+  {"en":"perception","tr":"algı","level":"B2","type":"noun"},
+  {"en":"phenomenon","tr":"fenomen","level":"B2","type":"noun"},
+  {"en":"policy","tr":"politika","level":"B2","type":"noun"},
+  {"en":"potential","tr":"potansiyel","level":"B2","type":"noun"},
+  {"en":"principle","tr":"ilke","level":"B2","type":"noun"},
+  {"en":"alone","tr":"yalnız","level":"A1","type":"adjective"},
+  {"en":"bored","tr":"sıkılmış","level":"A1","type":"adjective"},
+  {"en":"broken","tr":"kırık","level":"A1","type":"adjective"},
+  {"en":"cheap","tr":"ucuz","level":"A1","type":"adjective"},
+  {"en":"expensive","tr":"pahalı","level":"A1","type":"adjective"},
+  {"en":"correct","tr":"doğru","level":"A1","type":"adjective"},
+  {"en":"fat","tr":"şişman","level":"A1","type":"adjective"},
+  {"en":"thin","tr":"ince","level":"A1","type":"adjective"},
+  {"en":"flat","tr":"düz","level":"A1","type":"adjective"},
+  {"en":"round","tr":"yuvarlak","level":"A1","type":"adjective"},
+  {"en":"fresh","tr":"taze","level":"A1","type":"adjective"},
+  {"en":"frozen","tr":"dondurulmuş","level":"A1","type":"adjective"},
+  {"en":"healthy","tr":"sağlıklı","level":"A1","type":"adjective"},
+  {"en":"ill","tr":"hasta","level":"A1","type":"adjective"},
+  {"en":"nice","tr":"güzel","level":"A1","type":"adjective"},
+  {"en":"noisy","tr":"gürültülü","level":"A1","type":"adjective"},
+  {"en":"perfect","tr":"mükemmel","level":"A1","type":"adjective"},
+  {"en":"sharp","tr":"keskin","level":"A1","type":"adjective"},
+  {"en":"soft","tr":"yumuşak","level":"A1","type":"adjective"},
+  {"en":"sour","tr":"ekşi","level":"A1","type":"adjective"},
+  {"en":"sweet","tr":"tatlı","level":"A1","type":"adjective"},
+  {"en":"wet","tr":"ıslak","level":"A1","type":"adjective"},
+  {"en":"dry","tr":"kuru","level":"A1","type":"adjective"},
+  {"en":"warm","tr":"ılık","level":"A1","type":"adjective"},
+  {"en":"cool","tr":"serin","level":"A1","type":"adjective"},
+  {"en":"bake","tr":"pişirmek","level":"A1","type":"verb"},
+  {"en":"carry","tr":"taşımak","level":"A1","type":"verb"},
+  {"en":"catch","tr":"yakalamak","level":"A1","type":"verb"},
+  {"en":"climb","tr":"tırmanmak","level":"A1","type":"verb"},
+  {"en":"cook","tr":"pişirmek","level":"A1","type":"verb"},
+  {"en":"count","tr":"saymak","level":"A1","type":"verb"},
+  {"en":"cut","tr":"kesmek","level":"A1","type":"verb"},
+  {"en":"dance","tr":"dans etmek","level":"A1","type":"verb"},
+  {"en":"draw","tr":"çizmek","level":"A1","type":"verb"},
+  {"en":"dress","tr":"giyinmek","level":"A1","type":"verb"},
+  {"en":"drive","tr":"sürmek","level":"A1","type":"verb"},
+  {"en":"drop","tr":"düşürmek","level":"A1","type":"verb"},
+  {"en":"fall","tr":"düşmek","level":"A1","type":"verb"},
+  {"en":"feed","tr":"beslemek","level":"A1","type":"verb"},
+  {"en":"fight","tr":"kavga etmek","level":"A1","type":"verb"},
+  {"en":"fly","tr":"uçmak","level":"A1","type":"verb"},
+  {"en":"get","tr":"almak","level":"A1","type":"verb"},
+  {"en":"grow","tr":"büyümek","level":"A1","type":"verb"},
+  {"en":"hold","tr":"tutmak","level":"A1","type":"verb"},
+  {"en":"jump","tr":"atlamak","level":"A1","type":"verb"},
+  {"en":"kick","tr":"tekmelemek","level":"A1","type":"verb"},
+  {"en":"knock","tr":"vurmak","level":"A1","type":"verb"},
+  {"en":"lift","tr":"kaldırmak","level":"A1","type":"verb"},
+  {"en":"live","tr":"yaşamak","level":"A1","type":"verb"},
+  {"en":"look","tr":"bakmak","level":"A1","type":"verb"},
+  {"en":"meet","tr":"tanışmak","level":"A1","type":"verb"},
+  {"en":"paint","tr":"boyamak","level":"A1","type":"verb"},
+  {"en":"pick","tr":"toplamak","level":"A1","type":"verb"},
+  {"en":"push","tr":"itmek","level":"A1","type":"verb"},
+  {"en":"put","tr":"koymak","level":"A1","type":"verb"},
+  {"en":"ride","tr":"binmek","level":"A1","type":"verb"},
+  {"en":"ring","tr":"çalmak","level":"A1","type":"verb"},
+  {"en":"smell","tr":"koklamak","level":"A1","type":"verb"},
+  {"en":"swim","tr":"yüzmek","level":"A1","type":"verb"},
+  {"en":"touch","tr":"dokunmak","level":"A1","type":"verb"},
+  {"en":"turn","tr":"dönmek","level":"A1","type":"verb"},
+  {"en":"throw","tr":"fırlatmak","level":"A1","type":"verb"},
+  {"en":"tie","tr":"bağlamak","level":"A1","type":"verb"},
+  {"en":"wash","tr":"yıkamak","level":"A1","type":"verb"},
+  {"en":"address","tr":"adres","level":"A1","type":"noun"},
+  {"en":"age","tr":"yaş","level":"A1","type":"noun"},
+  {"en":"animal","tr":"hayvan","level":"A1","type":"noun"},
+  {"en":"arm","tr":"kol","level":"A1","type":"noun"},
+  {"en":"bag","tr":"çanta","level":"A1","type":"noun"},
+  {"en":"ball","tr":"top","level":"A1","type":"noun"},
+  {"en":"bank","tr":"banka","level":"A1","type":"noun"},
+  {"en":"body","tr":"vücut","level":"A1","type":"noun"},
+  {"en":"bottle","tr":"şişe","level":"A1","type":"noun"},
+  {"en":"box","tr":"kutu","level":"A1","type":"noun"},
+  {"en":"bread","tr":"ekmek","level":"A1","type":"noun"},
+  {"en":"bus","tr":"otobüs","level":"A1","type":"noun"},
+  {"en":"cake","tr":"pasta","level":"A1","type":"noun"},
+  {"en":"clock","tr":"saat","level":"A1","type":"noun"},
+  {"en":"clothes","tr":"kıyafetler","level":"A1","type":"noun"},
+  {"en":"coffee","tr":"kahve","level":"A1","type":"noun"},
+  {"en":"colour","tr":"renk","level":"A1","type":"noun"},
+  {"en":"cup","tr":"fincan","level":"A1","type":"noun"},
+  {"en":"desk","tr":"sıra","level":"A1","type":"noun"},
+  {"en":"egg","tr":"yulaf","level":"A1","type":"noun"},
+  {"en":"eye","tr":"göz","level":"A1","type":"noun"},
+  {"en":"face","tr":"yüz","level":"A1","type":"noun"},
+  {"en":"finger","tr":"parmak","level":"A1","type":"noun"},
+  {"en":"foot","tr":"ayak","level":"A1","type":"noun"},
+  {"en":"glass","tr":"bardak","level":"A1","type":"noun"},
+  {"en":"hair","tr":"saç","level":"A1","type":"noun"},
+  {"en":"hand","tr":"el","level":"A1","type":"noun"},
+  {"en":"hat","tr":"şapka","level":"A1","type":"noun"},
+  {"en":"head","tr":"baş","level":"A1","type":"noun"},
+  {"en":"heart","tr":"kalp","level":"A1","type":"noun"},
+  {"en":"home","tr":"ev","level":"A1","type":"noun"},
+  {"en":"key","tr":"anahtar","level":"A1","type":"noun"},
+  {"en":"kitchen","tr":"mutfak","level":"A1","type":"noun"},
+  {"en":"leg","tr":"bacak","level":"A1","type":"noun"},
+  {"en":"map","tr":"harita","level":"A1","type":"noun"},
+  {"en":"milk","tr":"süt","level":"A1","type":"noun"},
+  {"en":"mouth","tr":"ağız","level":"A1","type":"noun"},
+  {"en":"name","tr":"isim","level":"A1","type":"noun"},
+  {"en":"nose","tr":"burun","level":"A1","type":"noun"},
+  {"en":"number","tr":"numara","level":"A1","type":"noun"},
+  {"en":"pen","tr":"kalem","level":"A1","type":"noun"},
+  {"en":"picture","tr":"resim","level":"A1","type":"noun"},
+  {"en":"place","tr":"yer","level":"A1","type":"noun"},
+  {"en":"rain","tr":"yağmur","level":"A1","type":"noun"},
+  {"en":"shirt","tr":"gömlek","level":"A1","type":"noun"},
+  {"en":"shoe","tr":"ayakkabı","level":"A1","type":"noun"},
+  {"en":"snow","tr":"kar","level":"A1","type":"noun"},
+  {"en":"sock","tr":"çorap","level":"A1","type":"noun"},
+  {"en":"stomach","tr":"mide","level":"A1","type":"noun"},
+  {"en":"amazing","tr":"harika","level":"A2","type":"adjective"},
+  {"en":"classic","tr":"klasik","level":"A2","type":"adjective"},
+  {"en":"common","tr":"yaygın","level":"A2","type":"adjective"},
+  {"en":"complete","tr":"tam","level":"A2","type":"adjective"},
+  {"en":"cruel","tr":"zalim","level":"A2","type":"adjective"},
+  {"en":"cute","tr":"sevimli","level":"A2","type":"adjective"},
+  {"en":"double","tr":"çift","level":"A2","type":"adjective"},
+  {"en":"environmental","tr":"çevresel","level":"A2","type":"adjective"},
+  {"en":"equal","tr":"eşit","level":"A2","type":"adjective"},
+  {"en":"fair","tr":"adil","level":"A2","type":"adjective"},
+  {"en":"gentle","tr":"nazik","level":"A2","type":"adjective"},
+  {"en":"gorgeous","tr":"muhteşem","level":"A2","type":"adjective"},
+  {"en":"historical","tr":"tarihi","level":"A2","type":"adjective"},
+  {"en":"huge","tr":"devasa","level":"A2","type":"adjective"},
+  {"en":"ideal","tr":"ideal","level":"A2","type":"adjective"},
+  {"en":"immediate","tr":"acil","level":"A2","type":"adjective"},
+  {"en":"individual","tr":"bireysel","level":"A2","type":"adjective"},
+  {"en":"informal","tr":"gayri resmi","level":"A2","type":"adjective"},
+  {"en":"keen","tr":"istekli","level":"A2","type":"adjective"},
+  {"en":"lively","tr":"canlı","level":"A2","type":"adjective"},
+  {"en":"logical","tr":"mantıklı","level":"A2","type":"adjective"},
+  {"en":"lovely","tr":"sevimli","level":"A2","type":"adjective"},
+  {"en":"magic","tr":"sihirli","level":"A2","type":"adjective"},
+  {"en":"main","tr":"ana","level":"A2","type":"adjective"},
+  {"en":"major","tr":"önemli","level":"A2","type":"adjective"},
+  {"en":"minor","tr":"küçük","level":"A2","type":"adjective"},
+  {"en":"modern","tr":"modern","level":"A2","type":"adjective"},
+  {"en":"natural","tr":"doğal","level":"A2","type":"adjective"},
+  {"en":"official","tr":"resmi","level":"A2","type":"adjective"},
+  {"en":"original","tr":"orijinal","level":"A2","type":"adjective"},
+  {"en":"physical","tr":"fiziksel","level":"A2","type":"adjective"},
+  {"en":"plain","tr":"sade","level":"A2","type":"adjective"},
+  {"en":"pleasant","tr":"hoş","level":"A2","type":"adjective"},
+  {"en":"political","tr":"siyasi","level":"A2","type":"adjective"},
+  {"en":"powerful","tr":"güçlü","level":"A2","type":"adjective"},
+  {"en":"previous","tr":"önceki","level":"A2","type":"adjective"},
+  {"en":"private","tr":"özel","level":"A2","type":"adjective"},
+  {"en":"professional","tr":"profesyonel","level":"A2","type":"adjective"},
+  {"en":"realistic","tr":"gerçekçi","level":"A2","type":"adjective"},
+  {"en":"responsible","tr":"sorumlu","level":"A2","type":"adjective"},
+  {"en":"separate","tr":"ayrı","level":"A2","type":"adjective"},
+  {"en":"significant","tr":"önemli","level":"A2","type":"adjective"},
+  {"en":"silly","tr":"aptal","level":"A2","type":"adjective"},
+  {"en":"simple","tr":"basit","level":"A2","type":"adjective"},
+  {"en":"single","tr":"tek","level":"A2","type":"adjective"},
+  {"en":"social","tr":"sosyal","level":"A2","type":"adjective"},
+  {"en":"successful","tr":"başarılı","level":"A2","type":"adjective"},
+  {"en":"add","tr":"eklemek","level":"A2","type":"verb"},
+  {"en":"afford","tr":"karşılayabilmek","level":"A2","type":"verb"},
+  {"en":"arrange","tr":"düzenlemek","level":"A2","type":"verb"},
+  {"en":"attach","tr":"eklemek","level":"A2","type":"verb"},
+  {"en":"attend","tr":"katılmak","level":"A2","type":"verb"},
+  {"en":"attract","tr":"çekmek","level":"A2","type":"verb"},
+  {"en":"behave","tr":"davranmak","level":"A2","type":"verb"},
+  {"en":"bite","tr":"ısırmak","level":"A2","type":"verb"},
+  {"en":"blow","tr":"üflemek","level":"A2","type":"verb"},
+  {"en":"burn","tr":"yakmak","level":"A2","type":"verb"},
+  {"en":"cancel","tr":"iptal etmek","level":"A2","type":"verb"},
+  {"en":"celebrate","tr":"kutlamak","level":"A2","type":"verb"},
+  {"en":"check","tr":"kontrol etmek","level":"A2","type":"verb"},
+  {"en":"collect","tr":"toplamak","level":"A2","type":"verb"},
+  {"en":"connect","tr":"bağlamak","level":"A2","type":"verb"},
+  {"en":"cover","tr":"örtmek","level":"A2","type":"verb"},
+  {"en":"create","tr":"yaratmak","level":"A2","type":"verb"},
+  {"en":"cross","tr":"geçmek","level":"A2","type":"verb"},
+  {"en":"deliver","tr":"teslim etmek","level":"A2","type":"verb"},
+  {"en":"depend","tr":"bağlı olmak","level":"A2","type":"verb"},
+  {"en":"deserve","tr":"hak etmek","level":"A2","type":"verb"},
+  {"en":"download","tr":"indirmek","level":"A2","type":"verb"},
+  {"en":"enter","tr":"girmek","level":"A2","type":"verb"},
+  {"en":"escape","tr":"kaçmak","level":"A2","type":"verb"},
+  {"en":"expect","tr":"beklemek","level":"A2","type":"verb"},
+  {"en":"fail","tr":"başarısız olmak","level":"A2","type":"verb"},
+  {"en":"fill","tr":"doldurmak","level":"A2","type":"verb"},
+  {"en":"fix","tr":"onarmak","level":"A2","type":"verb"},
+  {"en":"form","tr":"oluşturmak","level":"A2","type":"verb"},
+  {"en":"guess","tr":"tahmin etmek","level":"A2","type":"verb"},
+  {"en":"happen","tr":"olmak","level":"A2","type":"verb"},
+  {"en":"hide","tr":"saklamak","level":"A2","type":"verb"},
+  {"en":"hurt","tr":"incitmek","level":"A2","type":"verb"},
+  {"en":"join","tr":"katılmak","level":"A2","type":"verb"},
+  {"en":"kiss","tr":"öpmek","level":"A2","type":"verb"},
+  {"en":"match","tr":"eşleştirmek","level":"A2","type":"verb"},
+  {"en":"miss","tr":"özlemek","level":"A2","type":"verb"},
+  {"en":"mix","tr":"karıştırmak","level":"A2","type":"verb"},
+  {"en":"offer","tr":"teklif etmek","level":"A2","type":"verb"},
+  {"en":"order","tr":"sipariş etmek","level":"A2","type":"verb"},
+  {"en":"organize","tr":"organize etmek","level":"A2","type":"verb"},
+  {"en":"pack","tr":"paketlemek","level":"A2","type":"verb"},
+  {"en":"accommodation","tr":"konaklama","level":"A2","type":"noun"},
+  {"en":"activity","tr":"faaliyet","level":"A2","type":"noun"},
+  {"en":"advertisement","tr":"reklam","level":"A2","type":"noun"},
+  {"en":"appointment","tr":"randevu","level":"A2","type":"noun"},
+  {"en":"atmosphere","tr":"atmosfer","level":"A2","type":"noun"},
+  {"en":"audience","tr":"izleyici","level":"A2","type":"noun"},
+  {"en":"background","tr":"arka plan","level":"A2","type":"noun"},
+  {"en":"bill","tr":"fatura","level":"A2","type":"noun"},
+  {"en":"business","tr":"iş","level":"A2","type":"noun"},
+  {"en":"calendar","tr":"takvim","level":"A2","type":"noun"},
+  {"en":"campaign","tr":"kampanya","level":"A2","type":"noun"},
+  {"en":"capital","tr":"başkent","level":"A2","type":"noun"},
+  {"en":"centre","tr":"merkez","level":"A2","type":"noun"},
+  {"en":"certificate","tr":"sertifika","level":"A2","type":"noun"},
+  {"en":"channel","tr":"kanal","level":"A2","type":"noun"},
+  {"en":"chapter","tr":"bölüm","level":"A2","type":"noun"},
+  {"en":"climate","tr":"iklim","level":"A2","type":"noun"},
+  {"en":"complaint","tr":"şikâyet","level":"A2","type":"noun"},
+  {"en":"connection","tr":"bağlantı","level":"A2","type":"noun"},
+  {"en":"conversation","tr":"konuşma","level":"A2","type":"noun"},
+  {"en":"customer","tr":"müşteri","level":"A2","type":"noun"},
+  {"en":"deadline","tr":"son tarih","level":"A2","type":"noun"},
+  {"en":"description","tr":"tanım","level":"A2","type":"noun"},
+  {"en":"destination","tr":"hedef","level":"A2","type":"noun"},
+  {"en":"direction","tr":"yön","level":"A2","type":"noun"},
+  {"en":"discount","tr":"indirim","level":"A2","type":"noun"},
+  {"en":"document","tr":"belge","level":"A2","type":"noun"},
+  {"en":"economy","tr":"ekonomi","level":"A2","type":"noun"},
+  {"en":"emergency","tr":"acil durum","level":"A2","type":"noun"},
+  {"en":"employee","tr":"çalışan","level":"A2","type":"noun"},
+  {"en":"employer","tr":"işveren","level":"A2","type":"noun"},
+  {"en":"entrance","tr":"giriş","level":"A2","type":"noun"},
+  {"en":"exhibition","tr":"sergi","level":"A2","type":"noun"},
+  {"en":"explanation","tr":"açıklama","level":"A2","type":"noun"},
+  {"en":"fee","tr":"ücret","level":"A2","type":"noun"},
+  {"en":"fitness","tr":"zindelik","level":"A2","type":"noun"},
+  {"en":"forecast","tr":"tahmin","level":"A2","type":"noun"},
+  {"en":"generation","tr":"nesil","level":"A2","type":"noun"},
+  {"en":"guest","tr":"misafir","level":"A2","type":"noun"},
+  {"en":"headline","tr":"başlık","level":"A2","type":"noun"},
+  {"en":"identity","tr":"kimlik","level":"A2","type":"noun"},
+  {"en":"income","tr":"gelir","level":"A2","type":"noun"},
+  {"en":"industry","tr":"endüstri","level":"A2","type":"noun"},
+  {"en":"institution","tr":"kurum","level":"A2","type":"noun"},
+  {"en":"instruction","tr":"talimat","level":"A2","type":"noun"},
+  {"en":"insurance","tr":"sigorta","level":"A2","type":"noun"},
+  {"en":"acceptable","tr":"kabul edilebilir","level":"B1","type":"adjective"},
+  {"en":"accurate","tr":"doğru","level":"B1","type":"adjective"},
+  {"en":"adequate","tr":"yeterli","level":"B1","type":"adjective"},
+  {"en":"apparent","tr":"açık","level":"B1","type":"adjective"},
+  {"en":"appropriate","tr":"uygun","level":"B1","type":"adjective"},
+  {"en":"approximate","tr":"yaklaşık","level":"B1","type":"adjective"},
+  {"en":"authentic","tr":"gerçek","level":"B1","type":"adjective"},
+  {"en":"aware","tr":"farkında","level":"B1","type":"adjective"},
+  {"en":"capable","tr":"yetenekli","level":"B1","type":"adjective"},
+  {"en":"challenging","tr":"zorlu","level":"B1","type":"adjective"},
+  {"en":"chronic","tr":"kronik","level":"B1","type":"adjective"},
+  {"en":"comprehensive","tr":"kapsamlı","level":"B1","type":"adjective"},
+  {"en":"consistent","tr":"tutarlı","level":"B1","type":"adjective"},
+  {"en":"controversial","tr":"tartışmalı","level":"B1","type":"adjective"},
+  {"en":"conventional","tr":"geleneksel","level":"B1","type":"adjective"},
+  {"en":"critical","tr":"kritik","level":"B1","type":"adjective"},
+  {"en":"cultural","tr":"kültürel","level":"B1","type":"adjective"},
+  {"en":"current","tr":"mevcut","level":"B1","type":"adjective"},
+  {"en":"decent","tr":"uygun","level":"B1","type":"adjective"},
+  {"en":"dedicated","tr":"adanmış","level":"B1","type":"adjective"},
+  {"en":"defensive","tr":"savunmacı","level":"B1","type":"adjective"},
+  {"en":"demanding","tr":"talepkâr","level":"B1","type":"adjective"},
+  {"en":"depressed","tr":"depresif","level":"B1","type":"adjective"},
+  {"en":"desperate","tr":"umutsuz","level":"B1","type":"adjective"},
+  {"en":"devoted","tr":"adanmış","level":"B1","type":"adjective"},
+  {"en":"diplomatic","tr":"diplomatik","level":"B1","type":"adjective"},
+  {"en":"distinctive","tr":"ayırt edici","level":"B1","type":"adjective"},
+  {"en":"diverse","tr":"çeşitli","level":"B1","type":"adjective"},
+  {"en":"dominant","tr":"baskın","level":"B1","type":"adjective"},
+  {"en":"dramatic","tr":"dramatik","level":"B1","type":"adjective"},
+  {"en":"dynamic","tr":"dinamik","level":"B1","type":"adjective"},
+  {"en":"effective","tr":"etkili","level":"B1","type":"adjective"},
+  {"en":"efficient","tr":"verimli","level":"B1","type":"adjective"},
+  {"en":"emotional","tr":"duygusal","level":"B1","type":"adjective"},
+  {"en":"engaged","tr":"meşgul","level":"B1","type":"adjective"},
+  {"en":"enormous","tr":"devasa","level":"B1","type":"adjective"},
+  {"en":"entire","tr":"tüm","level":"B1","type":"adjective"},
+  {"en":"equivalent","tr":"eşdeğer","level":"B1","type":"adjective"},
+  {"en":"essential","tr":"temel","level":"B1","type":"adjective"},
+  {"en":"evident","tr":"açık","level":"B1","type":"adjective"},
+  {"en":"excessive","tr":"aşırı","level":"B1","type":"adjective"},
+  {"en":"explicit","tr":"açık","level":"B1","type":"adjective"},
+  {"en":"extended","tr":"uzatılmış","level":"B1","type":"adjective"},
+  {"en":"external","tr":"dış","level":"B1","type":"adjective"},
+  {"en":"extreme","tr":"aşırı","level":"B1","type":"adjective"},
+  {"en":"fundamental","tr":"temel","level":"B1","type":"adjective"},
+  {"en":"genuine","tr":"gerçek","level":"B1","type":"adjective"},
+  {"en":"global","tr":"küresel","level":"B1","type":"adjective"},
+  {"en":"gradual","tr":"kademeli","level":"B1","type":"adjective"},
+  {"en":"harsh","tr":"sert","level":"B1","type":"adjective"},
+  {"en":"absorb","tr":"emmek","level":"B1","type":"verb"},
+  {"en":"accompany","tr":"eşlik etmek","level":"B1","type":"verb"},
+  {"en":"accuse","tr":"suçlamak","level":"B1","type":"verb"},
+  {"en":"adjust","tr":"ayarlamak","level":"B1","type":"verb"},
+  {"en":"affect","tr":"etkilemek","level":"B1","type":"verb"},
+  {"en":"alert","tr":"uyarmak","level":"B1","type":"verb"},
+  {"en":"amaze","tr":"şaşırtmak","level":"B1","type":"verb"},
+  {"en":"appeal","tr":"başvurmak","level":"B1","type":"verb"},
+  {"en":"apply","tr":"başvurmak","level":"B1","type":"verb"},
+  {"en":"approach","tr":"yaklaşmak","level":"B1","type":"verb"},
+  {"en":"approve","tr":"onaylamak","level":"B1","type":"verb"},
+  {"en":"arise","tr":"ortaya çıkmak","level":"B1","type":"verb"},
+  {"en":"assist","tr":"yardım etmek","level":"B1","type":"verb"},
+  {"en":"associate","tr":"ilişkilendirmek","level":"B1","type":"verb"},
+  {"en":"attempt","tr":"denemek","level":"B1","type":"verb"},
+  {"en":"award","tr":"ödüllendirmek","level":"B1","type":"verb"},
+  {"en":"ban","tr":"yasaklamak","level":"B1","type":"verb"},
+  {"en":"base","tr":"dayandırmak","level":"B1","type":"verb"},
+  {"en":"boost","tr":"artırmak","level":"B1","type":"verb"},
+  {"en":"broadcast","tr":"yayınlamak","level":"B1","type":"verb"},
+  {"en":"calculate","tr":"hesaplamak","level":"B1","type":"verb"},
+  {"en":"capture","tr":"yakalamak","level":"B1","type":"verb"},
+  {"en":"classify","tr":"sınıflandırmak","level":"B1","type":"verb"},
+  {"en":"combine","tr":"birleştirmek","level":"B1","type":"verb"},
+  {"en":"comment","tr":"yorum yapmak","level":"B1","type":"verb"},
+  {"en":"commit","tr":"taahhüt etmek","level":"B1","type":"verb"},
+  {"en":"compile","tr":"derlemek","level":"B1","type":"verb"},
+  {"en":"conduct","tr":"yürütmek","level":"B1","type":"verb"},
+  {"en":"confirm","tr":"onaylamak","level":"B1","type":"verb"},
+  {"en":"consist","tr":"oluşmak","level":"B1","type":"verb"},
+  {"en":"construct","tr":"inşa etmek","level":"B1","type":"verb"},
+  {"en":"contact","tr":"iletişime geçmek","level":"B1","type":"verb"},
+  {"en":"control","tr":"kontrol etmek","level":"B1","type":"verb"},
+  {"en":"convert","tr":"dönüştürmek","level":"B1","type":"verb"},
+  {"en":"analysis","tr":"analiz","level":"B1","type":"noun"},
+  {"en":"aspect","tr":"yön","level":"B1","type":"noun"},
+  {"en":"assessment","tr":"değerlendirme","level":"B1","type":"noun"},
+  {"en":"awareness","tr":"farkındalık","level":"B1","type":"noun"},
+  {"en":"barrier","tr":"engel","level":"B1","type":"noun"},
+  {"en":"basis","tr":"temel","level":"B1","type":"noun"},
+  {"en":"cause","tr":"neden","level":"B1","type":"noun"},
+  {"en":"citizenship","tr":"vatandaşlık","level":"B1","type":"noun"},
+  {"en":"colleague","tr":"meslektaş","level":"B1","type":"noun"},
+  {"en":"commitment","tr":"bağlılık","level":"B1","type":"noun"},
+  {"en":"communication","tr":"iletişim","level":"B1","type":"noun"},
+  {"en":"comparison","tr":"karşılaştırma","level":"B1","type":"noun"},
+  {"en":"concern","tr":"endişe","level":"B1","type":"noun"},
+  {"en":"conclusion","tr":"sonuç","level":"B1","type":"noun"},
+  {"en":"condition","tr":"koşul","level":"B1","type":"noun"},
+  {"en":"consideration","tr":"değerlendirme","level":"B1","type":"noun"},
+  {"en":"context","tr":"bağlam","level":"B1","type":"noun"},
+  {"en":"contract","tr":"sözleşme","level":"B1","type":"noun"},
+  {"en":"cooperation","tr":"iş birliği","level":"B1","type":"noun"},
+  {"en":"decade","tr":"on yıl","level":"B1","type":"noun"},
+  {"en":"definition","tr":"tanım","level":"B1","type":"noun"},
+  {"en":"dependency","tr":"bağımlılık","level":"B1","type":"noun"},
+  {"en":"depression","tr":"depresyon","level":"B1","type":"noun"},
+  {"en":"determination","tr":"kararlılık","level":"B1","type":"noun"},
+  {"en":"distinction","tr":"ayrım","level":"B1","type":"noun"},
+  {"en":"distribution","tr":"dağıtım","level":"B1","type":"noun"},
+  {"en":"domestic","tr":"yerel","level":"B1","type":"noun"},
+  {"en":"efficiency","tr":"verimlilik","level":"B1","type":"noun"},
+  {"en":"election","tr":"seçim","level":"B1","type":"noun"},
+  {"en":"element","tr":"unsur","level":"B1","type":"noun"},
+  {"en":"engagement","tr":"katılım","level":"B1","type":"noun"},
+  {"en":"establishment","tr":"kuruluş","level":"B1","type":"noun"},
+  {"en":"evaluation","tr":"değerlendirme","level":"B1","type":"noun"},
+  {"en":"exchange","tr":"değiş tokuş","level":"B1","type":"noun"},
+  {"en":"exposure","tr":"maruz kalma","level":"B1","type":"noun"},
+  {"en":"factor","tr":"faktör","level":"B1","type":"noun"},
+  {"en":"feedback","tr":"geri bildirim","level":"B1","type":"noun"},
+  {"en":"foundation","tr":"temel","level":"B1","type":"noun"},
+  {"en":"funding","tr":"finansman","level":"B1","type":"noun"},
+  {"en":"gap","tr":"boşluk","level":"B1","type":"noun"},
+  {"en":"guarantee","tr":"garanti","level":"B1","type":"noun"},
+  {"en":"guideline","tr":"kılavuz","level":"B1","type":"noun"},
+  {"en":"abstract","tr":"soyut","level":"B2","type":"adjective"},
+  {"en":"accessible","tr":"erişilebilir","level":"B2","type":"adjective"},
+  {"en":"accountable","tr":"sorumlu","level":"B2","type":"adjective"},
+  {"en":"ambivalent","tr":"kararsız","level":"B2","type":"adjective"},
+  {"en":"analytical","tr":"analitik","level":"B2","type":"adjective"},
+  {"en":"arbitrary","tr":"keyfi","level":"B2","type":"adjective"},
+  {"en":"assertive","tr":"kendinden emin","level":"B2","type":"adjective"},
+  {"en":"autonomous","tr":"özerk","level":"B2","type":"adjective"},
+  {"en":"beneficial","tr":"faydalı","level":"B2","type":"adjective"},
+  {"en":"biased","tr":"önyargılı","level":"B2","type":"adjective"},
+  {"en":"blunt","tr":"kaba","level":"B2","type":"adjective"},
+  {"en":"bureaucratic","tr":"bürokratik","level":"B2","type":"adjective"},
+  {"en":"calculated","tr":"hesaplı","level":"B2","type":"adjective"},
+  {"en":"categorical","tr":"kesin","level":"B2","type":"adjective"},
+  {"en":"charismatic","tr":"karizmatik","level":"B2","type":"adjective"},
+  {"en":"circumstantial","tr":"koşullara bağlı","level":"B2","type":"adjective"},
+  {"en":"colloquial","tr":"gündelik","level":"B2","type":"adjective"},
+  {"en":"comparable","tr":"karşılaştırılabilir","level":"B2","type":"adjective"},
+  {"en":"compelling","tr":"zorlayıcı","level":"B2","type":"adjective"},
+  {"en":"competent","tr":"yetkin","level":"B2","type":"adjective"},
+  {"en":"concise","tr":"özlü","level":"B2","type":"adjective"},
+  {"en":"conditional","tr":"koşullu","level":"B2","type":"adjective"},
+  {"en":"conspicuous","tr":"göze çarpan","level":"B2","type":"adjective"},
+  {"en":"credible","tr":"güvenilir","level":"B2","type":"adjective"},
+  {"en":"cumulative","tr":"birikimli","level":"B2","type":"adjective"},
+  {"en":"decisive","tr":"kararlı","level":"B2","type":"adjective"},
+  {"en":"deceptive","tr":"yanıltıcı","level":"B2","type":"adjective"},
+  {"en":"deferential","tr":"saygılı","level":"B2","type":"adjective"},
+  {"en":"definitive","tr":"kesin","level":"B2","type":"adjective"},
+  {"en":"demeaning","tr":"küçük düşürücü","level":"B2","type":"adjective"},
+  {"en":"democratic","tr":"demokratik","level":"B2","type":"adjective"},
+  {"en":"detrimental","tr":"zararlı","level":"B2","type":"adjective"},
+  {"en":"devious","tr":"sinsi","level":"B2","type":"adjective"},
+  {"en":"discerning","tr":"anlayışlı","level":"B2","type":"adjective"},
+  {"en":"discreet","tr":"ihtiyatlı","level":"B2","type":"adjective"},
+  {"en":"dismissive","tr":"küçümseyen","level":"B2","type":"adjective"},
+  {"en":"disruptive","tr":"bozucu","level":"B2","type":"adjective"},
+  {"en":"docile","tr":"uysal","level":"B2","type":"adjective"},
+  {"en":"dogmatic","tr":"dogmatik","level":"B2","type":"adjective"},
+  {"en":"erratic","tr":"tutarsız","level":"B2","type":"adjective"},
+  {"en":"ethical","tr":"etik","level":"B2","type":"adjective"},
+  {"en":"euphoric","tr":"coşkulu","level":"B2","type":"adjective"},
+  {"en":"exemplary","tr":"örnek","level":"B2","type":"adjective"},
+  {"en":"aggravate","tr":"ağırlaştırmak","level":"B2","type":"verb"},
+  {"en":"alienate","tr":"yabancılaştırmak","level":"B2","type":"verb"},
+  {"en":"alleviate","tr":"hafifletmek","level":"B2","type":"verb"},
+  {"en":"amplify","tr":"güçlendirmek","level":"B2","type":"verb"},
+  {"en":"aspire","tr":"özlemek","level":"B2","type":"verb"},
+  {"en":"authenticate","tr":"doğrulamak","level":"B2","type":"verb"},
+  {"en":"bolster","tr":"güçlendirmek","level":"B2","type":"verb"},
+  {"en":"capitalise","tr":"faydalanmak","level":"B2","type":"verb"},
+  {"en":"categorise","tr":"kategorize etmek","level":"B2","type":"verb"},
+  {"en":"cease","tr":"durdurmak","level":"B2","type":"verb"},
+  {"en":"characterise","tr":"nitelendirmek","level":"B2","type":"verb"},
+  {"en":"circulate","tr":"dolaşmak","level":"B2","type":"verb"},
+  {"en":"clarify","tr":"açıklamak","level":"B2","type":"verb"},
+  {"en":"coerce","tr":"zorlamak","level":"B2","type":"verb"},
+  {"en":"commemorate","tr":"anmak","level":"B2","type":"verb"},
+  {"en":"compel","tr":"zorlamak","level":"B2","type":"verb"},
+  {"en":"complement","tr":"tamamlamak","level":"B2","type":"verb"},
+  {"en":"comply","tr":"uymak","level":"B2","type":"verb"},
+  {"en":"conceal","tr":"gizlemek","level":"B2","type":"verb"},
+  {"en":"conclude","tr":"sonuca varmak","level":"B2","type":"verb"},
+  {"en":"condone","tr":"görmezden gelmek","level":"B2","type":"verb"},
+  {"en":"confine","tr":"sınırlamak","level":"B2","type":"verb"},
+  {"en":"conform","tr":"uymak","level":"B2","type":"verb"},
+  {"en":"confront","tr":"yüzleşmek","level":"B2","type":"verb"},
+  {"en":"consolidate","tr":"pekiştirmek","level":"B2","type":"verb"},
+  {"en":"constrain","tr":"kısıtlamak","level":"B2","type":"verb"},
+  {"en":"correlate","tr":"ilişkilendirmek","level":"B2","type":"verb"},
+  {"en":"counteract","tr":"önlemek","level":"B2","type":"verb"},
+  {"en":"cultivate","tr":"yetiştirmek","level":"B2","type":"verb"},
+  {"en":"curtail","tr":"kısmak","level":"B2","type":"verb"},
+  {"en":"customise","tr":"özelleştirmek","level":"B2","type":"verb"},
+  {"en":"dedicate","tr":"adanmak","level":"B2","type":"verb"},
+  {"en":"deem","tr":"saymak","level":"B2","type":"verb"},
+  {"en":"depict","tr":"tasvir etmek","level":"B2","type":"verb"},
+  {"en":"detect","tr":"tespit etmek","level":"B2","type":"verb"},
+  {"en":"deter","tr":"caydırmak","level":"B2","type":"verb"},
+  {"en":"devote","tr":"adamak","level":"B2","type":"verb"},
+  {"en":"disclose","tr":"açıklamak","level":"B2","type":"verb"},
+  {"en":"dismiss","tr":"reddetmek","level":"B2","type":"verb"},
+  {"en":"disrupt","tr":"bozmak","level":"B2","type":"verb"},
+  {"en":"distribute","tr":"dağıtmak","level":"B2","type":"verb"},
+  {"en":"draft","tr":"taslak hazırlamak","level":"B2","type":"verb"},
+  {"en":"drastically","tr":"dramatik biçimde","level":"B2","type":"verb"},
+  {"en":"accountability","tr":"hesap verebilirlik","level":"B2","type":"noun"},
+  {"en":"acquisition","tr":"edinim","level":"B2","type":"noun"},
+  {"en":"adaptation","tr":"uyarlama","level":"B2","type":"noun"},
+  {"en":"advocacy","tr":"savunuculuk","level":"B2","type":"noun"},
+  {"en":"agenda","tr":"gündem","level":"B2","type":"noun"},
+  {"en":"allegation","tr":"iddia","level":"B2","type":"noun"},
+  {"en":"allocation","tr":"tahsis","level":"B2","type":"noun"},
+  {"en":"ambition","tr":"hırs","level":"B2","type":"noun"},
+  {"en":"anomaly","tr":"anomali","level":"B2","type":"noun"},
+  {"en":"anticipation","tr":"beklenti","level":"B2","type":"noun"},
+  {"en":"application","tr":"uygulama","level":"B2","type":"noun"},
+  {"en":"assertion","tr":"iddia","level":"B2","type":"noun"},
+  {"en":"autonomy","tr":"özerklik","level":"B2","type":"noun"},
+  {"en":"breakthrough","tr":"atılım","level":"B2","type":"noun"},
+  {"en":"bureaucracy","tr":"bürokrasi","level":"B2","type":"noun"},
+  {"en":"capability","tr":"kapasite","level":"B2","type":"noun"},
+  {"en":"catalyst","tr":"katalizör","level":"B2","type":"noun"},
+  {"en":"collaboration","tr":"iş birliği","level":"B2","type":"noun"},
+  {"en":"commodity","tr":"emtia","level":"B2","type":"noun"},
+  {"en":"compensation","tr":"tazminat","level":"B2","type":"noun"},
+  {"en":"competence","tr":"yetkinlik","level":"B2","type":"noun"},
+  {"en":"compliance","tr":"uyum","level":"B2","type":"noun"},
+  {"en":"conception","tr":"kavram","level":"B2","type":"noun"},
+  {"en":"consensus","tr":"uzlaşı","level":"B2","type":"noun"},
+  {"en":"consistency","tr":"tutarlılık","level":"B2","type":"noun"},
+  {"en":"consolidation","tr":"pekiştirme","level":"B2","type":"noun"},
+  {"en":"corporation","tr":"şirket","level":"B2","type":"noun"},
+  {"en":"correlation","tr":"korelasyon","level":"B2","type":"noun"},
+  {"en":"credibility","tr":"güvenilirlik","level":"B2","type":"noun"},
+  {"en":"critique","tr":"eleştiri","level":"B2","type":"noun"},
+  {"en":"cultivation","tr":"yetiştirme","level":"B2","type":"noun"},
+  {"en":"cumulation","tr":"birikim","level":"B2","type":"noun"},
+  {"en":"curriculum","tr":"müfredat","level":"B2","type":"noun"},
+  {"en":"degradation","tr":"bozulma","level":"B2","type":"noun"},
+  {"en":"deliberation","tr":"müzakere","level":"B2","type":"noun"},
+  {"en":"demographic","tr":"demografik","level":"B2","type":"noun"},
+  {"en":"deprivation","tr":"yoksunluk","level":"B2","type":"noun"},
+  {"en":"designation","tr":"atama","level":"B2","type":"noun"},
+  {"en":"deterioration","tr":"kötüleşme","level":"B2","type":"noun"},
+  {"en":"deviation","tr":"sapma","level":"B2","type":"noun"},
+  {"en":"dialogue","tr":"diyalog","level":"B2","type":"noun"},
+  {"en":"dichotomy","tr":"ikili karşıtlık","level":"B2","type":"noun"},
+  {"en":"discourse","tr":"söylem","level":"B2","type":"noun"},
+  {"en":"disparity","tr":"eşitsizlik","level":"B2","type":"noun"},
+  {"en":"disruption","tr":"aksaklık","level":"B2","type":"noun"},
+  {"en":"documentation","tr":"belgeleme","level":"B2","type":"noun"},
+  {"en":"ecosystem","tr":"ekosistem","level":"B2","type":"noun"}
+];
+
+// ──────────────────────────────────────────────
+// STATE
+// ──────────────────────────────────────────────
+let state = {
+  sessionCorrect: 0,
+  sessionTotal: 0,
+  allTimeTotal: 0,
+  allTimeCorrect: 0,
+  streak: 0,
+  lastPlayDate: null,
+  wrongWords: {}, // word → count
+  usedIndices: [],
+  currentWord: null,
+  currentMode: null, // 'en2tr' or 'tr2en'
+  answered: false,
+};
+
+function loadState() {
+  const s = localStorage.getItem('wordly_state');
+  if (s) {
+    const saved = JSON.parse(s);
+    state.allTimeTotal = saved.allTimeTotal || 0;
+    state.allTimeCorrect = saved.allTimeCorrect || 0;
+    state.streak = saved.streak || 0;
+    state.lastPlayDate = saved.lastPlayDate || null;
+    state.wrongWords = saved.wrongWords || {};
+  }
+  // Update streak
+  const today = new Date().toDateString();
+  if (state.lastPlayDate !== today) {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    if (state.lastPlayDate === yesterday.toDateString()) {
+      // continue streak
+    } else if (state.lastPlayDate !== today) {
+      if (state.lastPlayDate !== null && state.lastPlayDate !== yesterday.toDateString()) {
+        state.streak = 0;
+      }
+    }
+  }
+}
+
+function saveState() {
+  const today = new Date().toDateString();
+  if (state.lastPlayDate !== today) {
+    state.streak++;
+    state.lastPlayDate = today;
+  }
+  localStorage.setItem('wordly_state', JSON.stringify({
+    allTimeTotal: state.allTimeTotal,
+    allTimeCorrect: state.allTimeCorrect,
+    streak: state.streak,
+    lastPlayDate: state.lastPlayDate,
+    wrongWords: state.wrongWords,
+  }));
+}
+
+// ──────────────────────────────────────────────
+// QUIZ LOGIC
+// ──────────────────────────────────────────────
+function getNextWord() {
+  // Prioritize wrong words
+  const wrongEntries = Object.entries(state.wrongWords).filter(([w,c]) => c > 0);
+  if (wrongEntries.length > 0 && Math.random() < 0.35) {
+    const [word] = wrongEntries[Math.floor(Math.random() * wrongEntries.length)];
+    return WORDS.find(w => w.en === word) || randomWord();
+  }
+  return randomWord();
+}
+
+function randomWord() {
+  if (state.usedIndices.length >= WORDS.length) state.usedIndices = [];
+  let idx;
+  do { idx = Math.floor(Math.random() * WORDS.length); }
+  while (state.usedIndices.includes(idx));
+  state.usedIndices.push(idx);
+  return WORDS[idx];
+}
+
+function getWrongOptions(correct, mode) {
+  // Prefer same type and nearby level for realistic distractors
+  const levels = ['A1','A2','B1','B2'];
+  const ci = levels.indexOf(correct.level);
+  const nearbyLevels = levels.filter((_,i) => Math.abs(i-ci) <= 1);
+  let pool = WORDS.filter(w => w.en !== correct.en && w.type === correct.type && nearbyLevels.includes(w.level));
+  if (pool.length < 3) pool = WORDS.filter(w => w.en !== correct.en && w.type === correct.type);
+  if (pool.length < 3) pool = WORDS.filter(w => w.en !== correct.en);
+  const shuffled = pool.sort(() => Math.random() - 0.5).slice(0, 3);
+  return shuffled.map(w => mode === 'en2tr' ? w.tr : w.en);
+}
+
+function nextQuestion() {
+  state.answered = false;
+  document.getElementById('feedbackArea').innerHTML = '';
+  document.getElementById('nextBtn').classList.add('invisible');
+
+  state.currentWord = getNextWord();
+  state.currentMode = Math.random() < 0.5 ? 'en2tr' : 'tr2en';
+  const word = state.currentWord;
+  const mode = state.currentMode;
+
+  // Question text
+  document.getElementById('levelTag').textContent = word.level;
+  document.getElementById('levelTag').className = `level-tag level-${word.level}`;
+  document.getElementById('questionType').textContent =
+    mode === 'en2tr' ? '🇬🇧 İngilizce → Türkçe' : '🇹🇷 Türkçe → İngilizce';
+  document.getElementById('questionWord').textContent =
+    mode === 'en2tr' ? word.en : word.tr;
+  document.getElementById('questionHint').textContent =
+    mode === 'en2tr' ? 'Bu kelimenin Türkçesi nedir?' : 'What is the English of this word?';
+
+  // Re-animate card
+  const card = document.getElementById('questionCard');
+  card.style.animation = 'none';
+  card.offsetHeight;
+  card.style.animation = '';
+
+  // Options
+  const correctAnswer = mode === 'en2tr' ? word.tr : word.en;
+  const wrongs = getWrongOptions(word, mode);
+  const all = [correctAnswer, ...wrongs].sort(() => Math.random() - 0.5);
+
+  const grid = document.getElementById('optionsGrid');
+  grid.innerHTML = '';
+  all.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span>${opt}</span>`;
+    btn.onclick = () => handleAnswer(btn, opt, correctAnswer);
+    grid.appendChild(btn);
+  });
+
+  updateUI();
+}
+
+function handleAnswer(btn, chosen, correct) {
+  if (state.answered) return;
+  state.answered = true;
+  state.sessionTotal++;
+  state.allTimeTotal++;
+
+  const buttons = document.querySelectorAll('.option-btn');
+  buttons.forEach(b => b.disabled = true);
+
+  if (chosen === correct) {
+    btn.classList.add('correct');
+    state.sessionCorrect++;
+    state.allTimeCorrect++;
+    // Reduce wrong count
+    const w = state.currentWord.en;
+    if (state.wrongWords[w] > 0) state.wrongWords[w]--;
+    showCorrectFeedback();
+  } else {
+    btn.classList.add('wrong');
+    // Highlight correct
+    buttons.forEach(b => {
+      if (b.querySelector('span').textContent === correct) b.classList.add('correct');
+    });
+    const w = state.currentWord.en;
+    state.wrongWords[w] = (state.wrongWords[w] || 0) + 1;
+    showWrongFeedback();
+  }
+
+  saveState();
+  updateUI();
+  updateWeakWords();
+
+  if (state.sessionTotal >= 10) {
+    setTimeout(showCelebration, 1200);
+  } else {
+    document.getElementById('nextBtn').classList.remove('invisible');
+  }
+}
+
+async function showCorrectFeedback() {
+  const word = state.currentWord;
+  const fb = document.getElementById('feedbackArea');
+  fb.innerHTML = `
+    <div class="feedback-card" id="fbCard">
+      <div class="feedback-header">
+        <div class="feedback-icon">✅</div>
+        <div class="feedback-title correct-text">Doğru! Harika iş! 🎉</div>
+      </div>
+      <div class="feedback-loading">
+        <div class="spinner" style="border-top-color:var(--green)"></div>
+        <span>Kelimeyi pekiştirmek için bir şeyler hazırlanıyor...</span>
+      </div>
+    </div>`;
+
+  const apiKey = localStorage.getItem('wordly_apikey');
+  if (!apiKey) {
+    document.getElementById('fbCard').innerHTML = `
+      <div class="feedback-header">
+        <div class="feedback-icon">✅</div>
+        <div class="feedback-title correct-text">Doğru! Harika iş! 🎉</div>
+      </div>
+      <div class="feedback-explanation">
+        <strong>"${word.en}"</strong> → <strong>"${word.tr}"</strong> — Bravo! 💜<br><br>
+        💡 Akılda kalıcı ipuçları için ayarlardan Groq API key ekle!
+      </div>`;
+    return;
+  }
+
+  try {
+    const prompt = `You are a friendly English teacher helping a Turkish learner.
+The student correctly answered: "${word.en}" (${word.tr} in Turkish, Level: ${word.level}, Type: ${word.type}).
+
+Respond ONLY in Turkish. Provide:
+1. One vivid, natural example sentence in English using "${word.en}", then its Turkish translation.
+2. A short, fun memory trick to make this word unforgettable (use rhyme, analogy, imagery, or wordplay).
+
+Format exactly like this (no extra text, no preamble):
+SENTENCE: [English sentence] — [Turkish translation]
+TIP: [Fun memory trick in Turkish]`;
+
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: JSON.stringify({
+        model: 'llama-3.1-8b-instant',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 200,
+        temperature: 0.8
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err?.error?.message || `HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+    const text = data.choices?.[0]?.message?.content || '';
+    const sentMatch = text.match(/SENTENCE:[\s\S]*?([^\n]+)/);
+    const tipMatch = text.match(/TIP:[\s\S]*?([^\n]+)/);
+    const sentence = sentMatch ? sentMatch[1].trim() : '';
+    const tip = tipMatch ? tipMatch[1].trim() : '';
+
+    document.getElementById('fbCard').innerHTML = `
+      <div class="feedback-header">
+        <div class="feedback-icon">✅</div>
+        <div class="feedback-title correct-text">Doğru! Harika iş! 🎉</div>
+      </div>
+      ${sentence ? `<div class="feedback-sentence" style="border-left-color:var(--green)">📝 ${sentence}</div>` : ''}
+      ${tip ? `<div class="feedback-explanation">🧠 ${tip}</div>` : ''}`;
+  } catch(e) {
+    console.error('Groq correct error:', e);
+    document.getElementById('fbCard').innerHTML = `
+      <div class="feedback-header">
+        <div class="feedback-icon">✅</div>
+        <div class="feedback-title correct-text">Doğru! Harika iş! 🎉</div>
+      </div>
+      <div class="feedback-explanation">
+        <strong>"${word.en}"</strong> → <strong>"${word.tr}"</strong> 💜<br>
+        <small style="color:var(--text-dim)">(${e.message})</small>
+      </div>`;
+  }
+}
+
+async function showWrongFeedback() {
+  const word = state.currentWord;
+  const fb = document.getElementById('feedbackArea');
+  fb.innerHTML = `
+    <div class="feedback-card" id="fbCard">
+      <div class="feedback-header">
+        <div class="feedback-icon">❌</div>
+        <div class="feedback-title wrong-text">Yanlış — Ama endişelenme!</div>
+      </div>
+      <div class="feedback-loading">
+        <div class="spinner"></div>
+        <span>Sana yardımcı olacak bir açıklama hazırlanıyor...</span>
+      </div>
+    </div>`;
+
+  const apiKey = localStorage.getItem('wordly_apikey');
+  if (!apiKey) {
+    document.getElementById('fbCard').innerHTML = `
+      <div class="feedback-header">
+        <div class="feedback-icon">❌</div>
+        <div class="feedback-title wrong-text">Yanlış — Ama endişelenme!</div>
+      </div>
+      <div class="feedback-explanation">
+        <strong>"${word.en}"</strong> kelimesi Türkçede <strong>"${word.tr}"</strong> demek.<br><br>
+        💡 Daha detaylı açıklama için ayarlardan Groq API key ekle!
+      </div>`;
+    return;
+  }
+
+  try {
+    const prompt = `You are a friendly English teacher helping a Turkish learner.
+The student got the word wrong: "${word.en}" (${word.tr} in Turkish, Level: ${word.level}).
+
+Respond ONLY in Turkish. Provide:
+1. One clear, natural example sentence in English using "${word.en}", then its Turkish translation.
+2. A short, memorable tip to remember this word (use analogy, emotion, or a visual trick).
+
+Format exactly like this (no extra text):
+SENTENCE: [English sentence] — [Turkish translation]
+TIP: [Memory tip]`;
+
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: JSON.stringify({
+        model: 'llama-3.1-8b-instant',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 200,
+        temperature: 0.7
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err?.error?.message || `HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+    const text = data.choices?.[0]?.message?.content || '';
+    const sentMatch = text.match(/SENTENCE:[\s\S]*?([^\n]+)/);
+    const tipMatch = text.match(/TIP:[\s\S]*?([^\n]+)/);
+    const sentence = sentMatch ? sentMatch[1].trim() : '';
+    const tip = tipMatch ? tipMatch[1].trim() : '';
+
+    document.getElementById('fbCard').innerHTML = `
+      <div class="feedback-header">
+        <div class="feedback-icon">❌</div>
+        <div class="feedback-title wrong-text">Yanlış — Ama endişelenme!</div>
+      </div>
+      ${sentence ? `<div class="feedback-sentence">📝 ${sentence}</div>` : ''}
+      ${tip ? `<div class="feedback-explanation">💡 ${tip}</div>` : ''}`;
+  } catch(e) {
+    console.error('Groq wrong error:', e);
+    document.getElementById('fbCard').innerHTML = `
+      <div class="feedback-header">
+        <div class="feedback-icon">❌</div>
+        <div class="feedback-title wrong-text">Yanlış — Ama endişelenme!</div>
+      </div>
+      <div class="feedback-explanation">
+        <strong>"${word.en}"</strong> → <strong>"${word.tr}"</strong><br><br>
+        <small style="color:var(--text-dim)">(${e.message})</small>
+      </div>`;
+  }
+}
+
+function showCelebration() {
+  const pct = Math.round((state.sessionCorrect / state.sessionTotal) * 100);
+  document.getElementById('quizArea').classList.add('hidden');
+  document.getElementById('celebrationArea').classList.remove('hidden');
+
+  let emoji, title, msg;
+  if (pct === 100) {
+    emoji = '🌟'; title = 'Mükemmel!';
+    msg = 'Tüm soruları doğru yaptın! Sen bir dahisin 💜';
+  } else if (pct >= 70) {
+    emoji = '🎉'; title = 'Harika!';
+    msg = `${state.sessionCorrect}/${state.sessionTotal} doğru — çok iyi gidiyorsun! Biraz daha pratikle mükemmel olacaksın 💪`;
+  } else {
+    emoji = '💪'; title = 'İyi Deneme!';
+    msg = `${state.sessionCorrect}/${state.sessionTotal} doğru — hata yaptığın kelimeler sana tekrar gelecek. Devam et! 🌸`;
+  }
+
+  document.getElementById('celebEmoji').textContent = emoji;
+  document.getElementById('celebTitle').textContent = title;
+  document.getElementById('celebMsg').textContent = msg;
+}
+
+function restartQuiz() {
+  state.sessionCorrect = 0;
+  state.sessionTotal = 0;
+  state.usedIndices = [];
+  document.getElementById('celebrationArea').classList.add('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  nextQuestion();
+}
+
+// ──────────────────────────────────────────────
+// UI UPDATES
+// ──────────────────────────────────────────────
+function updateUI() {
+  document.getElementById('statCorrect').textContent = state.sessionCorrect;
+  document.getElementById('statSession').textContent = state.sessionTotal;
+  document.getElementById('statTotal').textContent = state.allTimeTotal;
+  document.getElementById('streakNum').textContent = state.streak;
+
+  const pct = state.allTimeTotal > 0
+    ? Math.round((state.allTimeCorrect / state.allTimeTotal) * 100) : 0;
+  document.getElementById('progressPct').textContent = pct + '%';
+
+  const circumference = 326.7;
+  const offset = circumference - (pct / 100) * circumference;
+  document.getElementById('ringFill').style.strokeDashoffset = offset;
+}
+
+function updateWeakWords() {
+  const weak = Object.entries(state.wrongWords)
+    .filter(([,c]) => c >= 2)
+    .sort((a,b) => b[1]-a[1])
+    .slice(0, 8);
+
+  const section = document.getElementById('weakSection');
+  const list = document.getElementById('weakList');
+
+  if (weak.length === 0) { section.classList.add('hidden'); return; }
+  section.classList.remove('hidden');
+  list.innerHTML = weak.map(([w]) => `<span class="weak-chip">${w}</span>`).join('');
+}
+
+// ──────────────────────────────────────────────
+// SETTINGS
+// ──────────────────────────────────────────────
+function openSettings() {
+  document.getElementById('apiKeyInput').value = localStorage.getItem('wordly_apikey') || '';
+  document.getElementById('settingsModal').classList.remove('hidden');
+}
+function closeSettings() {
+  document.getElementById('settingsModal').classList.add('hidden');
+}
+function saveSettings() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (key) localStorage.setItem('wordly_apikey', key);
+  else localStorage.removeItem('wordly_apikey');
+  closeSettings();
+}
+
+// Close modal on overlay click
+document.getElementById('settingsModal').addEventListener('click', function(e) {
+  if (e.target === this) closeSettings();
+});
+
+// ──────────────────────────────────────────────
+// SERVICE WORKER + BİLDİRİM
+// ──────────────────────────────────────────────
+let swReg = null;
+
+async function initSW() {
+  if (!('serviceWorker' in navigator)) return;
+  // Sadece GitHub Pages gibi gerçek ortamlarda çalış, önizlemede atla
+  const isPreview = location.hostname.includes('claudeusercontent') || location.hostname === 'localhost';
+  if (isPreview) { console.log('Önizleme ortamı — SW atlandı'); checkNotifBanner(); return; }
+  try {
+    swReg = await navigator.serviceWorker.register('./sw.js', { scope: './' });
+    console.log('SW kayıtlı');
+    checkNotifBanner();
+    startHourlyCheck();
+  } catch(e) {
+    console.log('SW hatası:', e);
+  }
+}
+
+function checkNotifBanner() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'default') {
+    document.getElementById('notifBanner').classList.remove('hidden');
+  }
+}
+
+async function requestNotifPermission() {
+  if (!('Notification' in window)) {
+    alert('Tarayıcın bildirim desteklemiyor. Safari ile "Ana Ekrana Ekle" yaptıysan çalışır.');
+    return;
+  }
+  const perm = await Notification.requestPermission();
+  document.getElementById('notifBanner').classList.add('hidden');
+  if (perm === 'granted') {
+    // Test bildirimi gönder
+    setTimeout(() => {
+      if (swReg) {
+        swReg.showNotification('Wordly 💜', {
+          body: 'Bildirimler açık! Her gün saat 20:00\'de hatırlatacağım 🌸',
+          tag: 'wordly-test',
+        });
+      }
+    }, 1000);
+  }
+}
+
+// Saatlik kontrol — SW'ye mesaj gönder, o saat 20 ise bildirim atar
+function startHourlyCheck() {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  const sendCheck = () => {
+    if (navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage('CHECK_NOTIFICATION');
+    }
+  };
+  sendCheck();
+  setInterval(sendCheck, 60 * 60 * 1000); // Her saat
+}
+
+// ──────────────────────────────────────────────
+// INIT
+// ──────────────────────────────────────────────
+loadState();
+updateUI();
+updateWeakWords();
+nextQuestion();
+initSW();
+</script>
+</body>
+</html>
